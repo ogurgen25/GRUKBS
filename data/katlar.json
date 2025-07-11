@@ -1,0 +1,562 @@
+[
+  {
+    "OBJECTID":1,
+    "KAT_ID":"FEFZ",
+    "FAKULTE_ID":"FEF01",
+    "KAT_NO":0,
+    "KAT_ADI":"REKTÖRLÜK BİRİMLERİ",
+    "KULLANIM_TIPI":"İDARİ BİRİMLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":2,
+    "KAT_ID":"FEF1",
+    "FAKULTE_ID":"FEF01",
+    "KAT_NO":1,
+    "KAT_ADI":"DEKANLIK",
+    "KULLANIM_TIPI":"FEF DEKANLIK VE İDARİ BİRİMLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":3,
+    "KAT_ID":"FEF2",
+    "FAKULTE_ID":"FEF01",
+    "KAT_NO":2,
+    "KAT_ADI":"TARİH-SANAT TARİHİ",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":4,
+    "KAT_ID":"FEF3",
+    "FAKULTE_ID":"FEF01",
+    "KAT_NO":3,
+    "KAT_ADI":"TÜRK DİLİ VE EDEBİYATI-RUS DİLİ VE EDEBİYATI",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":5,
+    "KAT_ID":"FEF4",
+    "FAKULTE_ID":"FEF01",
+    "KAT_NO":4,
+    "KAT_ADI":"İSTATİSTİK-SOSYOLOJİ-İNGİLİZ DİLİ VE EDEBİYATI",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":6,
+    "KAT_ID":"FEF5",
+    "FAKULTE_ID":"FEF01",
+    "KAT_NO":5,
+    "KAT_ADI":"COĞRAFYA-MATEMATİK",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":7,
+    "KAT_ID":"FEF-1",
+    "FAKULTE_ID":"FEF01",
+    "KAT_NO":-1,
+    "KAT_ADI":"YEMEKHANE",
+    "KULLANIM_TIPI":"YEMEKHANE VE ÇARŞI",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":8,
+    "KAT_ID":"İİBF-1",
+    "FAKULTE_ID":"İİBF01",
+    "KAT_NO":-1,
+    "KAT_ADI":"YEMEKHANE",
+    "KULLANIM_TIPI":"YEMEKHANE VE ÇARŞI",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":9,
+    "KAT_ID":"İİBFZ",
+    "FAKULTE_ID":"İİBF01",
+    "KAT_NO":0,
+    "KAT_ADI":"REKTÖRLÜĞE BAĞLI BİRİMLER",
+    "KULLANIM_TIPI":"İDARİ BİRİMLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":10,
+    "KAT_ID":"İİBF1",
+    "FAKULTE_ID":"İİBF01",
+    "KAT_NO":1,
+    "KAT_ADI":"DEKANLIK",
+    "KULLANIM_TIPI":"İİBF DEKANLIK VE İDARİ BİRİMLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":11,
+    "KAT_ID":"İİBF2",
+    "FAKULTE_ID":"İİBF01",
+    "KAT_NO":2,
+    "KAT_ADI":"ULUSLARARASI İLİŞKİLER-SİYASET BİLİMİ VE KAMU YÖN.",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":12,
+    "KAT_ID":"İİBF3",
+    "FAKULTE_ID":"İİBF01",
+    "KAT_NO":3,
+    "KAT_ADI":"İKTİSAT-İŞLETME",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":13,
+    "KAT_ID":"İİBF4",
+    "FAKULTE_ID":"İİBF01",
+    "KAT_NO":4,
+    "KAT_ADI":"ENSTİTÜLER",
+    "KULLANIM_TIPI":"İDARİ BİRİMLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":14,
+    "KAT_ID":"İİBF5",
+    "FAKULTE_ID":"İLHF01",
+    "KAT_NO":5,
+    "KAT_ADI":"TEMEL İSLAM BİLİMLERİ-FELSEFE VE DİN BİLİMLERİ",
+    "KULLANIM_TIPI":"DEKANLIK-AKADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":15,
+    "KAT_ID":"İİBF5",
+    "FAKULTE_ID":"İLHF01",
+    "KAT_NO":5,
+    "KAT_ADI":"İSLAM TARİHİ VE SANATLARI",
+    "KULLANIM_TIPI":"DEKANLIK-AKADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":16,
+    "KAT_ID":"SBF2",
+    "FAKULTE_ID":"SBF01",
+    "KAT_NO":2,
+    "KAT_ADI":"DEKANLIK",
+    "KULLANIM_TIPI":"DEKANLIK-AKADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":17,
+    "KAT_ID":"SBF2",
+    "FAKULTE_ID":"SBF01",
+    "KAT_NO":2,
+    "KAT_ADI":"REKREASYON",
+    "KULLANIM_TIPI":"DEKANLIK-AKADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":18,
+    "KAT_ID":"SBF2",
+    "FAKULTE_ID":"SBF01",
+    "KAT_NO":2,
+    "KAT_ADI":"SPOR YÖNETİCİLİĞİ",
+    "KULLANIM_TIPI":"DEKANLIK-AKADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":19,
+    "KAT_ID":"SBF1",
+    "FAKULTE_ID":"SBF01",
+    "KAT_NO":1,
+    "KAT_ADI":"ANTRENÖRLÜK EĞİTİMİ BÖLÜMÜ",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":20,
+    "KAT_ID":"SBF1",
+    "FAKULTE_ID":"SBF01",
+    "KAT_NO":1,
+    "KAT_ADI":"BEDEN EĞİTİMİ VE SPOR BÖLÜMÜ",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":21,
+    "KAT_ID":"SHYZ",
+    "FAKULTE_ID":"SHY01",
+    "KAT_NO":0,
+    "KAT_ADI":"SİVİL HAVACILIK",
+    "KULLANIM_TIPI":"DEKANLIK-AKADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":22,
+    "KAT_ID":"DFZ",
+    "FAKULTE_ID":"SHY01",
+    "KAT_NO":0,
+    "KAT_ADI":"DENİZ LİMAN İŞLETMECİLİĞİ",
+    "KULLANIM_TIPI":"DEKANLIK-AKADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":23,
+    "KAT_ID":"DEVKON1",
+    "FAKULTE_ID":"DEVKON01",
+    "KAT_NO":1,
+    "KAT_ADI":"DEKANLIK",
+    "KULLANIM_TIPI":"DEKANLIK-AKADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":24,
+    "KAT_ID":"DEVKON1",
+    "FAKULTE_ID":"DEVKON01",
+    "KAT_NO":0,
+    "KAT_ADI":"TÜRK HALK OYUNLARI BÖLÜMÜ",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":"VAR"
+  },
+  {
+    "OBJECTID":25,
+    "KAT_ID":"DEVKON1",
+    "FAKULTE_ID":"DEVKON01",
+    "KAT_NO":-1,
+    "KAT_ADI":"TÜRK HALK OYUNLARI BÖLÜMÜ",
+    "KULLANIM_TIPI":"DERSLİK-SİNEVİZYON ODASI-KONFERANS SALONU",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":"YOK"
+  },
+  {
+    "OBJECTID":26,
+    "KAT_ID":"MZK1",
+    "FAKULTE_ID":"DEVKON01",
+    "KAT_NO":1,
+    "KAT_ADI":"MÜZİK BÖLÜMÜ",
+    "KULLANIM_TIPI":"ADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":"YOK"
+  },
+  {
+    "OBJECTID":27,
+    "KAT_ID":"GTM1",
+    "FAKULTE_ID":"DEVKON01",
+    "KAT_NO":1,
+    "KAT_ADI":"GELENEKSEL TÜRK MÜZİĞİ BÖLÜMÜ",
+    "KULLANIM_TIPI":"ADEMİSYEN ODALARI VE DERSLİKLER",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":"YOK"
+  },
+  {
+    "OBJECTID":28,
+    "KAT_ID":"EGTFFZ",
+    "FAKULTE_ID":"EGTFF01",
+    "KAT_NO":0,
+    "KAT_ADI":"EĞİTİM FAKÜLTESİ F BLOK ZEMİN KAT",
+    "KULLANIM_TIPI":"SALONLAR VE DEPOLAR",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":"YOK"
+  },
+  {
+    "OBJECTID":29,
+    "KAT_ID":"EGTFF1",
+    "FAKULTE_ID":"EGTFF01",
+    "KAT_NO":1,
+    "KAT_ADI":"GÜZEL SANATLAR EĞİTİMİ BÖLÜMÜ RESİM-İŞ EĞİTİMİ",
+    "KULLANIM_TIPI":"DERSLİKLER",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":30,
+    "KAT_ID":"EGTFF2",
+    "FAKULTE_ID":"EGTFF01",
+    "KAT_NO":2,
+    "KAT_ADI":"EĞİTİM FAKÜLTESİ F BLOK ORTAK DERSLİKLER",
+    "KULLANIM_TIPI":"DERSLİKLER",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":31,
+    "KAT_ID":"EGTFF3",
+    "FAKULTE_ID":"EGTFF01",
+    "KAT_NO":3,
+    "KAT_ADI":"TEMEL EĞİTİM BÖLÜMÜ SINIF EĞİTİMİ",
+    "KULLANIM_TIPI":"DERSLİKLER",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":32,
+    "KAT_ID":"EGTFGZ",
+    "FAKULTE_ID":"EGTFG01",
+    "KAT_NO":0,
+    "KAT_ADI":"ÖZEL EĞİTİM BÖLÜMÜ",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":33,
+    "KAT_ID":"EGTFG1",
+    "FAKULTE_ID":"EGTFG01",
+    "KAT_NO":1,
+    "KAT_ADI":"MÜZİK EĞİTİMİ",
+    "KULLANIM_TIPI":"DERSLİKLER",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":34,
+    "KAT_ID":"EGTFG2",
+    "FAKULTE_ID":"EGTFG01",
+    "KAT_NO":2,
+    "KAT_ADI":"OKUL ÖNCESİ EĞİTİMİ",
+    "KULLANIM_TIPI":"DERSLİKLER",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":35,
+    "KAT_ID":"EGTFG3",
+    "FAKULTE_ID":"EGTFG01",
+    "KAT_NO":3,
+    "KAT_ADI":"OKUL ÖNCESİ EĞİTİMİ",
+    "KULLANIM_TIPI":"DERSLİKLER",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":36,
+    "KAT_ID":"EGTFH1",
+    "FAKULTE_ID":"EGTFH01",
+    "KAT_NO":1,
+    "KAT_ADI":"RESİM-İŞ EĞİTİMİ VE MÜZİK EĞİTİMİ",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI VE DERSLİK",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":37,
+    "KAT_ID":"EGTFH2",
+    "FAKULTE_ID":"EGTFH01",
+    "KAT_NO":2,
+    "KAT_ADI":"OKUL ÖNCESİ EĞİTİMİ",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":38,
+    "KAT_ID":"EGTFH3",
+    "FAKULTE_ID":"EGTFH01",
+    "KAT_NO":3,
+    "KAT_ADI":"SINIF EĞİTİMİ",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":39,
+    "KAT_ID":"EGTFA3",
+    "FAKULTE_ID":"EGTFA01",
+    "KAT_NO":3,
+    "KAT_ADI":"SOSYAL BİLGİLER EĞİTİMİ",
+    "KULLANIM_TIPI":"DERSLİKLER",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":40,
+    "KAT_ID":"EGTFA2",
+    "FAKULTE_ID":"EGTFA01",
+    "KAT_NO":2,
+    "KAT_ADI":"REHBERLİK VE PSİKOLOJİK DANIŞMANLIK",
+    "KULLANIM_TIPI":"DERSLİKLER",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":41,
+    "KAT_ID":"EGTFA1",
+    "FAKULTE_ID":"EGTFA01",
+    "KAT_NO":1,
+    "KAT_ADI":"İLKÖĞRETİM MATEMATİK ÖĞRETMENLİĞİ",
+    "KULLANIM_TIPI":"DERSLİKLER",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":42,
+    "KAT_ID":"EGTFA3",
+    "FAKULTE_ID":"EGTFA01",
+    "KAT_NO":3,
+    "KAT_ADI":"FEN BİLGİSİ ÖĞRETMENLİĞİ",
+    "KULLANIM_TIPI":"DERSLİKLER",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":43,
+    "KAT_ID":"EGTFA1",
+    "FAKULTE_ID":"EGTFA01",
+    "KAT_NO":1,
+    "KAT_ADI":"TÜRKÇE ÖĞRETMENLİĞİ",
+    "KULLANIM_TIPI":"DERSLİKLER",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":44,
+    "KAT_ID":"EGTFA1",
+    "FAKULTE_ID":"EGTFA01",
+    "KAT_NO":1,
+    "KAT_ADI":"İNGİLİZCE ÖĞRETMENLİĞİ",
+    "KULLANIM_TIPI":"DERSLİKLER",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":45,
+    "KAT_ID":"EGTFC2",
+    "FAKULTE_ID":"EGTFC01",
+    "KAT_NO":2,
+    "KAT_ADI":"DEKANLIK",
+    "KULLANIM_TIPI":"DEKANLIK VE AKADEMİSYEN ODALARI",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":46,
+    "KAT_ID":"EGTFB3",
+    "FAKULTE_ID":"EGTFB01",
+    "KAT_NO":3,
+    "KAT_ADI":"SOSYAL BİLGİLER EĞİTİMİ",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI",
+    "ASANSOR":"YOK",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":47,
+    "KAT_ID":"FMÜHFZ",
+    "FAKULTE_ID":"FMÜHF01",
+    "KAT_NO":0,
+    "KAT_ADI":"DEKANLIK, ÖĞRENCİ İŞLERİ VE ÇOK AMAÇLI KULLANIM",
+    "KULLANIM_TIPI":"DEKANLIK, ÖGR İŞL, DERSLİKLER, LAB, AMFİ, GÜVENLİK",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":48,
+    "KAT_ID":"FMÜHF1",
+    "FAKULTE_ID":"FMÜHF01",
+    "KAT_NO":1,
+    "KAT_ADI":"FİZİK VE KİMYA BÖLÜMÜ",
+    "KULLANIM_TIPI":"DESLİKLER VE LABLAR",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":49,
+    "KAT_ID":"FMÜHF2",
+    "FAKULTE_ID":"FMÜHF01",
+    "KAT_NO":2,
+    "KAT_ADI":"FİZİK, KİMYA VE BİYOLOJİ BÖLÜMÜ",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI DERSLİK VE LAB",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":50,
+    "KAT_ID":"FMÜHF3",
+    "FAKULTE_ID":"FMÜHF01",
+    "KAT_NO":3,
+    "KAT_ADI":"MÜHENDİSLİK BÖLÜMLERİ ORTAK",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI DERSLİK VE LABLAR",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":51,
+    "KAT_ID":"FMÜHF4",
+    "FAKULTE_ID":"FMÜHF01",
+    "KAT_NO":4,
+    "KAT_ADI":"MÜHENDİSLİK BÖLÜMLERİ ORTAK",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI DERSLİK VE LABLAR",
+    "ASANSOR":"VAR",
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":52,
+    "KAT_ID":"SHMYO1",
+    "FAKULTE_ID":"SHMYO01",
+    "KAT_NO":1,
+    "KAT_ADI":"TIBBİ HİZMETLER VE TEKNİKLER SAĞLIK BAKIM HZMT",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI DERSLİK VE LABLAR",
+    "ASANSOR":null,
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":53,
+    "KAT_ID":"SHMYO2",
+    "FAKULTE_ID":"SHMYO1",
+    "KAT_NO":2,
+    "KAT_ADI":"ÇOCUK BAKIMI VE TERAPİ VE REHABİLİTASYON BÖLÜMÜ",
+    "KULLANIM_TIPI":"AKADEMİSYEN ODALARI DERSLİK VE LABLAR",
+    "ASANSOR":null,
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":57,
+    "KAT_ID":"REK01",
+    "FAKULTE_ID":"REK1",
+    "KAT_NO":1,
+    "KAT_ADI":"GİRESUN ÜNİVERSİTESİ GENEL SEKRETERLİK",
+    "KULLANIM_TIPI":null,
+    "ASANSOR":null,
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":58,
+    "KAT_ID":"GRÜHM1",
+    "FAKULTE_ID":"REK1",
+    "KAT_NO":2,
+    "KAT_ADI":"GİRESUN ÜNİVERSİTESİ HUKUK MÜŞAVİRLİĞİ",
+    "KULLANIM_TIPI":null,
+    "ASANSOR":null,
+    "ACIL_ÇIKIS":null
+  },
+  {
+    "OBJECTID":59,
+    "KAT_ID":"GRÜGS1",
+    "FAKULTE_ID":"REK1",
+    "KAT_NO":1,
+    "KAT_ADI":"GİRESUN ÜNİVERSİTESİ GENEL SEKRETERLİK",
+    "KULLANIM_TIPI":null,
+    "ASANSOR":null,
+    "ACIL_ÇIKIS":null
+  }
+]
