@@ -39,24 +39,7 @@
   <!-- JS Bağlantıları -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    // Harita başlangıç koordinatları ve sınırlar
-<script>
-  const map = L.map('map', {
-    center: [40.915297, 38.321793], // Harita açılış konumu
-    zoom: 18, // Yakınlaştırma düzeyi
-    maxBounds: [                     // Harita dışına çıkmayı engelle
-      [40.912, 38.318],              // Güneybatı köşesi
-      [40.918, 38.325]               // Kuzeydoğu köşesi
-    ],
-    maxBoundsViscosity: 1.0
-  });
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 22,
-    attribution: '© OpenStreetMap'
-  }).addTo(map);
-
-    // JSON veri kaynakları
+      // JSON veri kaynakları
     let bolumler = [], katlar = [], personeller = [];
 
     Promise.all([
