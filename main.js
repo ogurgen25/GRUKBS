@@ -16,7 +16,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // JSON veri kaynakları
 let bolumler = [], katlar = [], personeller = [];
 
-// Verileri sırayla oku
+// Verileri sırayla yükle
 Promise.all([
   fetch('data/bolumler.json').then(res => res.json()),
   fetch('data/katlar.json').then(res => res.json()),
@@ -26,7 +26,7 @@ Promise.all([
   katlar = katData;
   personeller = personelData;
 
-  // FAKULTE katmanı
+  // FAKÜLTE GeoJSON'u yükle
   fetch('data/FAKULTE.json')
     .then(res => res.json())
     .then(fakulteData => {
@@ -48,3 +48,31 @@ Promise.all([
                   <strong>Bölüm:</strong> ${bolum.BOLUM_ADI}<br>
                   <strong>Kat:</strong> ${kat ? kat.KAT_ADI : "Belirsiz"}<br>
                   <strong>Bölüm Başkanı:</strong> ${bolum.BOLUM_BASKANI || "Yok"}<br>
+                  <strong>Personeller:</strong>
+                  <ul>
+                    ${personelList.map(p => `<li>${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</li>`).join("")}
+                  </ul>
+                </div>
+              `;
+            });
+          }
+
+          // Sağ panelde göster
+          layer.on('click', () => {
+            document.getElementById('infoContent').innerHTML = content;
+          });
+
+          // Popup olarak göster
+          layer.bindPopup(fakulteAdi);
+        },
+        style: {
+          color: "#0066cc",
+          weight: 2,
+          fillOpacity: 0.3
+        }
+      }).addTo(map);
+
+      // Haritayı fakülte katmanına göre zoomla
+      map.fitBounds(fakulteLayer.getBounds());
+    });
+});
