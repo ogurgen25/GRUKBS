@@ -20,12 +20,20 @@ Promise.all([
   personeller = personelData;
 
   // FAKULTE GeoJSON'u yükle
-  fetch('data/FAKULTE.json')
-    .then(res => res.json())
-    .then(fakulteData => {
-      const geojsonLayer = L.geoJSON(fakulteData, {
-        onEachFeature: (feature, layer) => {
-          const fakulteAdi = feature.properties.ADI || feature.properties.FAKULTE_ADI || "Bilinmeyen Fakülte";
+ fetch('data/FAKULTE.json')
+  .then(res => res.json())
+  .then(fakulteData => {
+    const fakulteLayer = L.geoJSON(fakulteData);
+    map.fitBounds(fakulteLayer.getBounds()); // 🔥 HARİTA FAKÜLTE ÜZERİNDE AÇILIR
+
+    fakulteLayer.eachLayer(layer => {
+      const fakulteAdi = layer.feature.properties.ADI || "Bilinmeyen Fakülte";
+      ...
+      layer.bindPopup(fakulteAdi);
+    });
+
+    fakulteLayer.addTo(map);
+  });
 
           // Bu fakülteye ait bölümler
           const bolumlerInFakulte = bolumler.filter(b => b.FAKÜLTE_ADI === fakulteAdi);
