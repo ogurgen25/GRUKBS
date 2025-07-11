@@ -2,18 +2,110 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8" />
-    <title>Kampüs Bilgi Sistemi</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-    />
+  <meta charset="UTF-8">
+  <title>Kampüs Bilgi Sistemi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
-    <div id="map"></div>
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-    <script src="main.js"></script>
+  <!-- Üst Panel: Arama ve Filtreler -->
+  <header class="app-header">
+    <div class="header-left">
+      <h1>🏛️ Kampüs Bilgi Sistemi</h1>
+    </div>
+    <div class="header-right">
+      <input type="text" id="searchInput" placeholder="Ara: fakülte, bölüm, personel...">
+      <select id="filterType">
+        <option value="all">Tümü</option>
+        <option value="fakulte">Fakülteler</option>
+        <option value="laboratuvar">Laboratuvarlar</option>
+        <option value="kütüphane">Kütüphaneler</option>
+        <option value="güvenlik">Güvenlik Noktaları</option>
+        <option value="cami">Camiler</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- Ana Gövde: Harita ve Bilgi Paneli -->
+  <main class="app-body">
+    <div id="map" class="map-container"></div>
+    <aside id="infoPanel" class="info-panel">
+      <h2>İçerik Paneli</h2>
+      <div id="infoContent">Bir nesne seçiniz...</div>
+    </aside>
+  </main>
+
+  <!-- JS Bağlantıları -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Harita başlangıç koordinatları ve sınırlar
+    const map = L.map('map', {
+      maxBounds: [[39.745, 39.495], [39.757, 39.505]],
+      maxBoundsViscosity: 1.0
+    }).setView([39.750, 39.500], 17);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 22,
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // JSON veri kaynakları
+    let bolumler = [], katlar = [], personeller = [];
+
+    Promise.all([
+      fetch('data/bolumler.json').then(res => res.json()),
+      fetch('data/katlar.json').then(res => res.json()),
+      fetch('data/personel.json').then(res => res.json())
+    ]).then(([bolumData, katData, personelData]) => {
+      bolumler = bolumData;
+      katlar = katData;
+      personeller = personelData;
+
+      // FAKULTE katmanı
+      fetch('data/FAKULTE.json')
+        .then(res => res.json())
+        .then(fakulteData => {
+          L.geoJSON(fakulteData, {
+            onEachFeature: (feature, layer) => {
+              const fakulteAdi = feature.properties.ADI || feature.properties.FAKULTE_ADI || "Bilinmeyen Fakülte";
+              const bolumlerInFakulte = bolumler.filter(b => b.FAKÜLTE_ADI === fakulteAdi);
+
+              let content = `<h3>${fakulteAdi}</h3>`;
+              if (bolumlerInFakulte.length === 0) {
+                content += "<p>Hiç bölüm kaydı yok.</p>";
+              } else {
+                bolumlerInFakulte.forEach(bolum => {
+                  const kat = katlar.find(k => k.KAT_ID === bolum.KAT_ID);
+                  const personelList = personeller.filter(p => p.BOLUM_ID === bolum.BOLUM_ID);
+                  content += `
+                    <div style="margin-top:8px; padding:5px; border-top:1px solid #ccc;">
+                      <strong>Bölüm:</strong> ${bolum.BOLUM_ADI}<br>
+                      <strong>Kat:</strong> ${kat ? kat.KAT_ADI : "Belirsiz"}<br>
+                      <strong>Bölüm Başkanı:</strong> ${bolum.BOLUM_BASKANI || "Yok"}<br>
+                      <strong>Personeller:</strong>
+                      <ul>
+                        ${personelList.map(p => `<li>${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</li>`).join("")}
+                      </ul>
+                    </div>
+                  `;
+                });
+              }
+
+              layer.on('click', () => {
+                document.getElementById('infoContent').innerHTML = content;
+              });
+
+              layer.bindPopup(fakulteAdi);
+            },
+            style: {
+              color: "#0066cc",
+              weight: 2,
+              fillOpacity: 0.3
+            }
+          }).addTo(map);
+        });
+    });
+  </script>
 </body>
 </html>
