@@ -7,6 +7,12 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
+    body {
+      background-color: #00245e;
+      color: white;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
     .menu-tabs {
       display: flex;
       justify-content: center;
@@ -52,9 +58,41 @@
       color: white;
     }
     .clickable {
-      color: blue;
+      color: #00ccff;
       cursor: pointer;
       text-decoration: underline;
+    }
+    .app-header {
+      background-color: #001e4d;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .app-body {
+      display: flex;
+    }
+    #map {
+      flex: 3;
+      height: calc(100vh - 140px);
+    }
+    .info-panel {
+      flex: 1;
+      padding: 20px;
+      background-color: #001e4d;
+      color: white;
+      overflow-y: auto;
+    }
+    .footer {
+      background-color: #001e4d;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+    }
+    .footer img {
+      max-height: 100px;
     }
   </style>
 </head>
@@ -89,6 +127,13 @@
     </aside>
   </main>
 
+  <!-- Footer Bilgisi -->
+  <footer class="footer">
+    <img src="footer_logo.png" alt="Giresun Üniversitesi">
+    <p>Giresun Üniversitesi Rektörlük Gaziler Mahallesi, Prof. Ahmet Taner Kışlalı Cd, 28200 Merkez/Giresun<br>
+    Tel: +90 (454) 310 10 00 | Fax: +90 (454) 310 11 19 | Kep: gru@hs01.kep.tr</p>
+  </footer>
+
   <!-- JS Bağlantıları -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
@@ -97,6 +142,10 @@
         document.querySelectorAll('.menu-tabs .tab').forEach(t => t.classList.remove('active'));
         btn.classList.add('active');
       });
+    });
+
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
     });
   </script>
   <script src="main.js"></script>
