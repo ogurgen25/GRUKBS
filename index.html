@@ -168,7 +168,7 @@
             const selectedKat = this.value;
             let content = '<h3>Kat Filtresi</h3>';
             const bolumFiltered = selectedKat ? bolumler.filter(b => b.KAT_ID == selectedKat) : bolumler;
-            content += '<ul>' + bolumFiltered.map(b => `<li>${b.BOLUM_ADI}</li>`).join('') + '</ul>';
+            content += '<ul>' + bolumFiltered.map(b => `<li class="highlight-bolum" data-fakulte="${b.FAKÜLTE_ADI}">${b.BOLUM_ADI}</li>`).join('') + '</ul>';
             document.getElementById('infoContent').innerHTML = content;
           });
 
@@ -180,12 +180,25 @@
                 const fakulteList = [...new Set(bolumler.map(b => b.FAKÜLTE_ADI))];
                 content = '<h3>Fakülteler</h3><ul>' + fakulteList.map(f => `<li>${f}</li>`).join('') + '</ul>';
               } else if (type === 'bolum') {
-                content = '<h3>Bölümler</h3><ul>' + bolumler.map(b => `<li>${b.BOLUM_ADI}</li>`).join('') + '</ul>';
+                content = '<h3>Bölümler</h3><ul>' + bolumler.map(b => `<li class="highlight-bolum" data-fakulte="${b.FAKÜLTE_ADI}">${b.BOLUM_ADI}</li>`).join('') + '</ul>';
               } else if (type === 'personel') {
                 content = '<h3>Personeller</h3><ul>' + personeller.map(p => `<li>${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</li>`).join('') + '</ul>';
               }
               document.getElementById('infoContent').innerHTML = content;
             });
+          });
+
+          document.getElementById('infoContent').addEventListener('click', function (e) {
+            if (e.target.classList.contains('highlight-bolum')) {
+              const fakulteName = e.target.dataset.fakulte;
+              fakulteLayer.eachLayer(layer => {
+                const adi = layer.feature.properties.ADI || layer.feature.properties.FAKULTE_ADI || "";
+                if (adi === fakulteName) {
+                  map.fitBounds(layer.getBounds());
+                  layer.openPopup();
+                }
+              });
+            }
           });
 
           document.getElementById('themeToggle').addEventListener('click', () => {
