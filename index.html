@@ -42,6 +42,11 @@
     .dark-mode .info-panel h2 {
       color: white;
     }
+    .clickable {
+      color: blue;
+      cursor: pointer;
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -125,13 +130,9 @@
                 const personelList = personeller.filter(p => p.BOLUM_ID === bolum.BOLUM_ID);
                 content += `
                   <div style="margin-top:8px; padding:5px; border-top:1px solid #ccc;">
-                    <strong>Bölüm:</strong> ${bolum.BOLUM_ADI}<br>
+                    <strong>Bölüm:</strong> <span class="clickable" onclick="showBolum('${bolum.BOLUM_ID}')">${bolum.BOLUM_ADI}</span><br>
                     <strong>Kat:</strong> ${kat ? kat.KAT_ADI : "Belirsiz"}<br>
-                    <strong>Bölüm Başkanı:</strong> ${bolum.BOLUM_BASKANI || "Yok"}<br>
-                    <strong>Personeller:</strong>
-                    <ul>
-                      ${personelList.map(p => `<li>${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</li>`).join("")}
-                    </ul>
+                    <strong>Bölüm Başkanı:</strong> ${bolum.BOLUM_BASKANI || "Yok"}
                   </div>
                 `;
               });
@@ -150,61 +151,75 @@
           }).addTo(map);
 
           map.fitBounds(fakulteLayer.getBounds());
-
-          document.getElementById('searchInput').addEventListener('input', function () {
-            const term = this.value.toLowerCase();
-            fakulteLayer.eachLayer(layer => {
-              const adi = layer.feature.properties.ADI || "";
-              if (adi.toLowerCase().includes(term)) {
-                layer.setStyle({ color: '#ff6600' });
-                layer.openPopup();
-              } else {
-                layer.setStyle({ color: '#0066cc' });
-              }
-            });
-          });
-
-          document.getElementById('katFilter').addEventListener('change', function () {
-            const selectedKat = this.value;
-            let content = '<h3>Kat Filtresi</h3>';
-            const bolumFiltered = selectedKat ? bolumler.filter(b => b.KAT_ID == selectedKat) : bolumler;
-            content += '<ul>' + bolumFiltered.map(b => `<li class="highlight-bolum" data-fakulte="${b.FAKÜLTE_ADI}">${b.BOLUM_ADI}</li>`).join('') + '</ul>';
-            document.getElementById('infoContent').innerHTML = content;
-          });
-
-          document.querySelectorAll('.menu-tabs .tab').forEach(btn => {
-            btn.addEventListener('click', () => {
-              const type = btn.dataset.type;
-              let content = '';
-              if (type === 'fakulte') {
-                const fakulteList = [...new Set(bolumler.map(b => b.FAKÜLTE_ADI))];
-                content = '<h3>Fakülteler</h3><ul>' + fakulteList.map(f => `<li>${f}</li>`).join('') + '</ul>';
-              } else if (type === 'bolum') {
-                content = '<h3>Bölümler</h3><ul>' + bolumler.map(b => `<li class="highlight-bolum" data-fakulte="${b.FAKÜLTE_ADI}">${b.BOLUM_ADI}</li>`).join('') + '</ul>';
-              } else if (type === 'personel') {
-                content = '<h3>Personeller</h3><ul>' + personeller.map(p => `<li>${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</li>`).join('') + '</ul>';
-              }
-              document.getElementById('infoContent').innerHTML = content;
-            });
-          });
-
-          document.getElementById('infoContent').addEventListener('click', function (e) {
-            if (e.target.classList.contains('highlight-bolum')) {
-              const fakulteName = e.target.dataset.fakulte;
-              fakulteLayer.eachLayer(layer => {
-                const adi = layer.feature.properties.ADI || layer.feature.properties.FAKULTE_ADI || "";
-                if (adi === fakulteName) {
-                  map.fitBounds(layer.getBounds());
-                  layer.openPopup();
-                }
-              });
-            }
-          });
-
-          document.getElementById('themeToggle').addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-          });
         });
+
+      document.getElementById('searchInput').addEventListener('input', function () {
+        const term = this.value.toLowerCase();
+        fakulteLayer.eachLayer(layer => {
+          const adi = layer.feature.properties.ADI || "";
+          if (adi.toLowerCase().includes(term)) {
+            layer.setStyle({ color: '#ff6600' });
+            layer.openPopup();
+          } else {
+            layer.setStyle({ color: '#0066cc' });
+          }
+        });
+      });
+
+      document.getElementById('katFilter').addEventListener('change', function () {
+        const selectedKat = this.value;
+        let content = '<h3>Kat Filtresi</h3>';
+        const bolumFiltered = selectedKat ? bolumler.filter(b => b.KAT_ID == selectedKat) : bolumler;
+        content += '<ul>' + bolumFiltered.map(b => `<li class="clickable" onclick="showBolum('${b.BOLUM_ID}')">${b.BOLUM_ADI}</li>`).join('') + '</ul>';
+        document.getElementById('infoContent').innerHTML = content;
+      });
+
+      document.querySelectorAll('.menu-tabs .tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const type = btn.dataset.type;
+          let content = '';
+          if (type === 'fakulte') {
+            const fakulteList = [...new Set(bolumler.map(b => b.FAKÜLTE_ADI))];
+            content = '<h3>Fakülteler</h3><ul>' + fakulteList.map(f => `<li>${f}</li>`).join('') + '</ul>';
+          } else if (type === 'bolum') {
+            content = '<h3>Bölümler</h3><ul>' + bolumler.map(b => `<li class="clickable" onclick="showBolum('${b.BOLUM_ID}')">${b.BOLUM_ADI}</li>`).join('') + '</ul>';
+          } else if (type === 'personel') {
+            content = '<h3>Personeller</h3><ul>' + personeller.map(p => `<li class="clickable" onclick="showPersonel('${p.PERSONEL_ID}')">${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</li>`).join('') + '</ul>';
+          }
+          document.getElementById('infoContent').innerHTML = content;
+        });
+      });
+
+      document.getElementById('themeToggle').addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+      });
+
+      window.showBolum = function (bolumId) {
+        const bolum = bolumler.find(b => b.BOLUM_ID == bolumId);
+        if (!bolum) return;
+        const kat = katlar.find(k => k.KAT_ID === bolum.KAT_ID);
+        const personelList = personeller.filter(p => p.BOLUM_ID === bolum.BOLUM_ID);
+
+        let content = `<h3>${bolum.BOLUM_ADI}</h3>`;
+        content += `<strong>Kat:</strong> ${kat ? kat.KAT_ADI : "Belirsiz"}<br>`;
+        content += `<strong>Bölüm Başkanı:</strong> ${bolum.BOLUM_BASKANI || "Yok"}<br>`;
+        content += `<strong>Personeller:</strong><ul>` + personelList.map(p => `<li class="clickable" onclick="showPersonel('${p.PERSONEL_ID}')">${p.AD_SOYAD}</li>`).join('') + '</ul>';
+
+        document.getElementById('infoContent').innerHTML = content;
+      }
+
+      window.showPersonel = function (personelId) {
+        const personel = personeller.find(p => p.PERSONEL_ID == personelId);
+        if (!personel) return;
+
+        let content = `<h3>${personel.AD_SOYAD}</h3>`;
+        content += `<strong>Ünvan:</strong> ${personel.UNVAN || "Belirsiz"}<br>`;
+        content += `<strong>E-posta:</strong> ${personel.EMAIL || "-"}<br>`;
+        content += `<strong>Telefon:</strong> ${personel.TELEFON || "-"}<br>`;
+        content += `<strong>Oda No:</strong> ${personel.ODA_NO || "-"}<br>`;
+
+        document.getElementById('infoContent').innerHTML = content;
+      }
     });
   </script>
 </body>
