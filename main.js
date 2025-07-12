@@ -1,5 +1,6 @@
+// Harita nesnesini tanımla
 const map = L.map('map', {
-  center: [40.915297, 38.321793], // Gaziler Mahallesi
+  center: [40.915297, 38.321793],
   zoom: 18,
   maxBounds: [
     [40.912, 38.318],
@@ -8,13 +9,16 @@ const map = L.map('map', {
   maxBoundsViscosity: 1.0
 });
 
+// Tile katmanı ekle
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 22,
   attribution: '© OpenStreetMap'
 }).addTo(map);
 
+// JSON veri kaynakları
 let bolumler = [], katlar = [], personeller = [];
 
+// JSON dosyalarını oku
 Promise.all([
   fetch('data/bolumler.json').then(res => res.json()),
   fetch('data/katlar.json').then(res => res.json()),
@@ -24,12 +28,15 @@ Promise.all([
   katlar = katData;
   personeller = personelData;
 
+  // FAKULTE katmanını yükle
   fetch('data/FAKULTE.json')
     .then(res => res.json())
     .then(fakulteData => {
       const fakulteLayer = L.geoJSON(fakulteData, {
         onEachFeature: (feature, layer) => {
-          const fakulteAdi = feature.properties.ADI || "Bilinmeyen Fakülte";
+          const props = feature.properties || {};
+          const fakulteAdi = props.ADI || props.FAKULTE_ADI || "Bilinmeyen Fakülte";
+
           const bolumlerInFakulte = bolumler.filter(b => b.FAKÜLTE_ADI === fakulteAdi);
 
           let content = `<h3>${fakulteAdi}</h3>`;
@@ -39,7 +46,6 @@ Promise.all([
             bolumlerInFakulte.forEach(bolum => {
               const kat = katlar.find(k => k.KAT_ID === bolum.KAT_ID);
               const personelList = personeller.filter(p => p.BOLUM_ID === bolum.BOLUM_ID);
-
               content += `
                 <div style="margin-top:8px; padding:5px; border-top:1px solid #ccc;">
                   <strong>Bölüm:</strong> ${bolum.BOLUM_ADI}<br>
@@ -67,6 +73,7 @@ Promise.all([
         }
       }).addTo(map);
 
+      // Harita görünümünü fakültelerin sınırına göre ayarla
       map.fitBounds(fakulteLayer.getBounds());
     });
 });
