@@ -15,14 +15,6 @@
     </div>
     <div class="header-right">
       <input type="text" id="searchInput" placeholder="Ara: fakülte, bölüm, personel...">
-      <select id="filterType">
-        <option value="all">Tümü</option>
-        <option value="fakulte">Fakülteler</option>
-        <option value="laboratuvar">Laboratuvarlar</option>
-        <option value="kütüphane">Kütüphaneler</option>
-        <option value="güvenlik">Güvenlik Noktaları</option>
-        <option value="cami">Camiler</option>
-      </select>
     </div>
   </header>
 
@@ -39,7 +31,7 @@
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
     const map = L.map('map', {
-      center: [40.9153, 38.3217],
+      center: [40.915297, 38.321793],
       zoom: 18,
       maxBounds: [
         [40.912, 38.318],
@@ -67,9 +59,9 @@
       fetch('data/FAKULTE.json')
         .then(res => res.json())
         .then(fakulteData => {
-          const geojsonLayer = L.geoJSON(fakulteData, {
+          const fakulteLayer = L.geoJSON(fakulteData, {
             onEachFeature: (feature, layer) => {
-              const fakulteAdi = feature.properties.FAKULTE_ADI || "Bilinmeyen Fakülte";
+              const fakulteAdi = feature.properties.ADI || feature.properties.FAKULTE_ADI || "Bilinmeyen Fakülte";
               const bolumlerInFakulte = bolumler.filter(b => b.FAKÜLTE_ADI === fakulteAdi);
 
               let content = `<h3>${fakulteAdi}</h3>`;
@@ -106,7 +98,22 @@
             }
           }).addTo(map);
 
-          map.fitBounds(geojsonLayer.getBounds());
+          // Otomatik yakınlaştır
+          map.fitBounds(fakulteLayer.getBounds());
+
+          // Arama fonksiyonu
+          document.getElementById('searchInput').addEventListener('input', function () {
+            const searchTerm = this.value.toLowerCase();
+            fakulteLayer.eachLayer(layer => {
+              const adi = layer.feature.properties.ADI || "";
+              if (adi.toLowerCase().includes(searchTerm)) {
+                layer.setStyle({ color: '#ff6600' });
+                layer.openPopup();
+              } else {
+                layer.setStyle({ color: '#0066cc' });
+              }
+            });
+          });
         });
     });
   </script>
