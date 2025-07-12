@@ -1,5 +1,5 @@
 const map = L.map('map', {
-  center: [40.915297, 38.321793],
+  center: [40.915297, 38.321793], // Gaziler Mahallesi
   zoom: 18,
   maxBounds: [
     [40.912, 38.318],
@@ -13,10 +13,8 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap'
 }).addTo(map);
 
-// JSON veri kaynakları
 let bolumler = [], katlar = [], personeller = [];
 
-// Verileri sırayla yükle
 Promise.all([
   fetch('data/bolumler.json').then(res => res.json()),
   fetch('data/katlar.json').then(res => res.json()),
@@ -26,7 +24,6 @@ Promise.all([
   katlar = katData;
   personeller = personelData;
 
-  // FAKÜLTE GeoJSON'u yükle
   fetch('data/FAKULTE.json')
     .then(res => res.json())
     .then(fakulteData => {
@@ -57,12 +54,10 @@ Promise.all([
             });
           }
 
-          // Sağ panelde göster
           layer.on('click', () => {
             document.getElementById('infoContent').innerHTML = content;
           });
 
-          // Popup olarak göster
           layer.bindPopup(fakulteAdi);
         },
         style: {
@@ -72,7 +67,6 @@ Promise.all([
         }
       }).addTo(map);
 
-      // Haritayı fakülte katmanına göre zoomla
       map.fitBounds(fakulteLayer.getBounds());
     });
 });
