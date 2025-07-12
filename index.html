@@ -7,11 +7,6 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
-    body {
-      background-color: #002b6b;
-      color: white;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
     .menu-tabs {
       display: flex;
       justify-content: center;
@@ -19,64 +14,52 @@
       margin: 10px auto;
     }
     .menu-tabs .tab {
-      padding: 10px 20px;
+      padding: 8px 16px;
       font-weight: bold;
-      background-color: #004a99;
-      color: white;
+      background-color: #eee;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.3s, color 0.3s;
     }
     .menu-tabs .tab:hover {
-      background-color: #0066cc;
+      background-color: #ddd;
     }
     .menu-tabs .tab.active {
-      background-color: #0099ff;
+      background-color: #007bff;
       color: white;
     }
-    .info-panel {
-      background-color: #e6f0ff;
-      color: #003366;
-      padding: 20px;
-      border-radius: 10px;
-      margin: 10px;
-    }
-    .person-card {
-      background-color: white;
-      border-left: 5px solid #004a99;
-      padding: 10px;
-      margin-bottom: 8px;
-      border-radius: 6px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      color: #003366;
-    }
-    .person-card:hover {
-      background-color: #e6f0ff;
-      cursor: pointer;
-    }
-    .dark-mode {
+    body.dark-mode {
       background-color: #1e1e1e;
       color: white;
     }
     .dark-mode .tab {
       background-color: #333;
+      color: white;
+    }
+    .dark-mode .tab:hover {
+      background-color: #555;
     }
     .dark-mode .tab.active {
       background-color: #007bff;
+      color: white;
     }
     .dark-mode .info-panel {
       background-color: #2a2a2a;
       color: white;
     }
+    .dark-mode .info-panel h2 {
+      color: white;
+    }
     .clickable {
-      color: #004a99;
+      color: blue;
       cursor: pointer;
-      font-weight: bold;
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
+  <!-- Üst Panel: Arama ve Filtreler -->
   <header class="app-header">
     <div class="header-left">
       <h1>🏛️ Giresun Üniversitesi Kampüs Bilgi Sistemi</h1>
@@ -90,12 +73,14 @@
     </div>
   </header>
 
+  <!-- Menü Sekmeleri -->
   <nav class="menu-tabs">
     <button class="tab active" data-type="fakulte">🏛️ Fakülteler</button>
     <button class="tab" data-type="bolum">📚 Bölümler</button>
     <button class="tab" data-type="personel">👤 Personeller</button>
   </nav>
 
+  <!-- Ana Gövde: Harita ve Bilgi Paneli -->
   <main class="app-body">
     <div id="map" class="map-container"></div>
     <aside id="infoPanel" class="info-panel">
@@ -104,12 +89,23 @@
     </aside>
   </main>
 
+  <!-- JS Bağlantıları -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
     document.querySelectorAll('.menu-tabs .tab').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.menu-tabs .tab').forEach(t => t.classList.remove('active'));
         btn.classList.add('active');
+
+        // Haritada ilgili kategoriye yakınlaştırma örneği:
+        const type = btn.getAttribute('data-type');
+        if (type === 'fakulte' && window.lastFakulteBounds) {
+          map.fitBounds(window.lastFakulteBounds);
+        } else if (type === 'bolum' && window.lastBolumBounds) {
+          map.fitBounds(window.lastBolumBounds);
+        } else if (type === 'personel' && window.lastPersonelBounds) {
+          map.fitBounds(window.lastPersonelBounds);
+        }
       });
     });
   </script>
