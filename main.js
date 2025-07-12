@@ -1,126 +1,103 @@
-const map = L.map("map", {
+// Ana harita başlatma
+const map = L.map('map', {
   center: [40.915297, 38.321793],
   zoom: 18,
   maxBounds: [
     [40.912, 38.318],
-    [40.918, 38.325],
+    [40.918, 38.325]
   ],
-  maxBoundsViscosity: 1.0,
+  maxBoundsViscosity: 1.0
 });
 
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+// OSM katmanı
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 22,
-  attribution: "© OpenStreetMap",
+  attribution: '© OpenStreetMap'
 }).addTo(map);
 
-let bolumler = [],
-  katlar = [],
-  personeller = [],
-  fakulteLayer;
+// Veri tutucular
+let bolumler = [], katlar = [], personeller = [], fakulteKatmani;
 
-const infoContent = document.getElementById("infoContent");
+// Kat filtreleme dropdown
+const katFilter = document.getElementById('katFilter');
 
-// Tema Değişimi
-document.getElementById("themeToggle").addEventListener("click", () => {
-  document.body.classList.toggle("dark-mode");
-});
-
-// JSON'ları Yükle
+// JSON verileri yükleniyor
 Promise.all([
-  fetch("data/bolumler.json").then((res) => res.json()),
-  fetch("data/katlar.json").then((res) => res.json()),
-  fetch("data/personel.json").then((res) => res.json()),
-  fetch("data/FAKULTE.json").then((res) => res.json()),
-]).then(([bolumData, katData, personelData, fakulteData]) => {
+  fetch('data/bolumler.json').then(res => res.json()),
+  fetch('data/katlar.json').then(res => res.json()),
+  fetch('data/personel.json').then(res => res.json())
+]).then(([bolumData, katData, personelData]) => {
   bolumler = bolumData;
   katlar = katData;
   personeller = personelData;
 
-  fakulteLayer = L.geoJSON(fakulteData, {
-    onEachFeature: (feature, layer) => {
-      const fakulteAdi = feature.properties.ADI || "Bilinmeyen Fakülte";
-      const bolumlerInFakulte = bolumler.filter(
-        (b) => b.FAKÜLTE_ADI === fakulteAdi
-      );
-
-      let html = `<h3>${fakulteAdi}</h3>`;
-
-      bolumlerInFakulte.forEach((bolum) => {
-        const kat = katlar.find((k) => k.KAT_ID === bolum.KAT_ID);
-        const personelList = personeller.filter(
-          (p) => p.BOLUM_ID === bolum.BOLUM_ID
-        );
-
-        html += `
-          <div style="margin-top:10px; padding:10px; border-left:4px solid #007bff; background:#f9f9f9; border-radius:6px;">
-            <strong>Bölüm:</strong> <span class="clickable" onclick="zoomToFakulte('${fakulteAdi}')">${bolum.BOLUM_ADI}</span><br>
-            <strong>Kat:</strong> ${kat ? kat.KAT_ADI : "Bilinmiyor"}<br>
-            <strong>Başkan:</strong> ${bolum.BOLUM_BASKANI || "Yok"}
-            <ul style="margin-top:5px;">
-              ${personelList
-                .map(
-                  (p) =>
-                    `<li class="clickable" onclick="showPersonel('${p.AD_SOYAD}', '${p.UNVAN}', '${fakulteAdi}')">${p.AD_SOYAD}</li>`
-                )
-                .join("")}
-            </ul>
-          </div>
-        `;
-      });
-
-      layer.on("click", () => {
-        infoContent.innerHTML = html;
-      });
-
-      layer.bindPopup(fakulteAdi);
-    },
-    style: {
-      color: "#0066cc",
-      weight: 2,
-      fillOpacity: 0.3,
-    },
-  }).addTo(map);
-
-  map.fitBounds(fakulteLayer.getBounds());
-
-  // Kat filtrele
-  const katSelect = document.getElementById("katFilter");
-  katlar.forEach((k) => {
-    const opt = document.createElement("option");
-    opt.value = k.KAT_ID;
-    opt.textContent = k.KAT_ADI;
-    katSelect.appendChild(opt);
-  });
-});
-
-// Filtre ile arama
-document.getElementById("searchInput").addEventListener("input", function () {
-  const val = this.value.toLowerCase();
-  const results = [];
-
-  bolumler.forEach((b) => {
-    if (b.BOLUM_ADI.toLowerCase().includes(val)) {
-      results.push(b);
-    }
+  // Kat filtrelerini doldur
+  const uniqueKatlar = [...new Set(katlar.map(k => k.KAT_ADI))];
+  uniqueKatlar.forEach(k => {
+    const opt = document.createElement('option');
+    opt.value = k;
+    opt.textContent = k;
+    katFilter.appendChild(opt);
   });
 
-  const html = results
-    .map((b) => {
-      const fakulte = b.FAKÜLTE_ADI;
-      return `<div class="person-card" onclick="zoomToFakulte('${fakulte}')">
-        <strong>${b.BOLUM_ADI}</strong><br>
-        Fakülte: ${fakulte}
-      </div>`;
-    })
-    .join("");
+  // Fakülte katmanını yükle
+  fetch('data/FAKULTE.json')
+    .then(res => res.json())
+    .then(fakulteData => {
+      fakulteKatmani = L.geoJSON(fakulteData, {
+        onEachFeature: (feature, layer) => {
+          const fakulteAdi = feature.properties.ADI || feature.properties.FAKULTE_ADI || "Bilinmeyen Fakülte";
+          const bolumlerInFakulte = bolumler.filter(b => b.FAKÜLTE_ADI === fakulteAdi);
 
-  infoContent.innerHTML = html || "Eşleşme bulunamadı.";
+          let content = `<h3>${fakulteAdi}</h3>`;
+          if (bolumlerInFakulte.length === 0) {
+            content += "<p>Hiç bölüm kaydı yok.</p>";
+          } else {
+            bolumlerInFakulte.forEach(bolum => {
+              const kat = katlar.find(k => k.KAT_ID === bolum.KAT_ID);
+              const personelList = personeller.filter(p => p.BOLUM_ID === bolum.BOLUM_ID);
+
+              content += `
+                <div style="margin-top:10px; padding:8px; border:1px solid #ccc; border-radius:8px; background:#f9f9f9;">
+                  <strong>Bölüm:</strong> <span class="clickable" onclick="highlightFakulte('${fakulteAdi}')">${bolum.BOLUM_ADI}</span><br>
+                  <strong>Kat:</strong> ${kat ? kat.KAT_ADI : "Belirsiz"}<br>
+                  <strong>Bölüm Başkanı:</strong> ${bolum.BOLUM_BASKANI || "Yok"}<br>
+                  <strong>Personeller:</strong>
+                  <ul style="margin-left:20px;">
+                    ${personelList.map(p => `<li class="clickable" onclick="zoomToPersonel('${p.AD_SOYAD}', '${fakulteAdi}')">${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</li>`).join("")}
+                  </ul>
+                </div>
+              `;
+            });
+          }
+
+          layer.on('click', () => {
+            document.getElementById('infoContent').innerHTML = content;
+          });
+
+          layer.bindPopup(fakulteAdi);
+        },
+        style: {
+          color: "#0066cc",
+          weight: 2,
+          fillOpacity: 0.3
+        }
+      }).addTo(map);
+    });
 });
 
-// Zoom için dış fonksiyon
-function zoomToFakulte(fakulteAdi) {
-  fakulteLayer.eachLayer((layer) => {
-    const adi = layer.feature.properties.ADI;
+// Tema değiştirici
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.addEventListener('click', () => {
+  document.body.classList.toggle('dark-mode');
+});
+
+// Haritada fakülteyi öne çıkartma fonksiyonu
+function highlightFakulte(fakulteAdi) {
+  if (!fakulteKatmani) return;
+  fakulteKatmani.eachLayer(layer => {
+    const props = layer.feature.properties;
+    const adi = props.ADI || props.FAKULTE_ADI;
     if (adi === fakulteAdi) {
       map.fitBounds(layer.getBounds());
       layer.openPopup();
@@ -128,14 +105,7 @@ function zoomToFakulte(fakulteAdi) {
   });
 }
 
-// Personel Detayı Göster
-function showPersonel(adSoyad, unvan, fakulteAdi) {
-  infoContent.innerHTML = `
-    <div class="person-card">
-      <h3>${adSoyad}</h3>
-      <p><strong>Unvan:</strong> ${unvan}</p>
-      <p><strong>Fakülte:</strong> ${fakulteAdi}</p>
-    </div>
-  `;
-  zoomToFakulte(fakulteAdi);
+// Personel tıklanınca haritada fakülteye gitme fonksiyonu
+function zoomToPersonel(adSoyad, fakulteAdi) {
+  highlightFakulte(fakulteAdi);
 }
