@@ -6,6 +6,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    .menu-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px auto;
+    }
+    .menu-tabs .tab {
+      padding: 8px 16px;
+      font-weight: bold;
+      background-color: #eee;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .menu-tabs .tab:hover {
+      background-color: #ccc;
+    }
+  </style>
 </head>
 <body>
   <!-- Üst Panel: Arama ve Filtreler -->
@@ -17,6 +36,13 @@
       <input type="text" id="searchInput" placeholder="Ara: fakülte, bölüm, personel...">
     </div>
   </header>
+
+  <!-- Menü Sekmeleri -->
+  <nav class="menu-tabs">
+    <button class="tab" data-type="fakulte">🏛️ Fakülteler</button>
+    <button class="tab" data-type="bolum">📚 Bölümler</button>
+    <button class="tab" data-type="personel">👤 Personeller</button>
+  </nav>
 
   <!-- Ana Gövde: Harita ve Bilgi Paneli -->
   <main class="app-body">
@@ -98,7 +124,6 @@
             }
           }).addTo(map);
 
-          // Otomatik yakınlaştır
           map.fitBounds(fakulteLayer.getBounds());
 
           // Arama fonksiyonu
@@ -112,6 +137,26 @@
               } else {
                 layer.setStyle({ color: '#0066cc' });
               }
+            });
+          });
+
+          // Menü sekmelerine tıklanınca info panelini güncelle
+          document.querySelectorAll('.menu-tabs .tab').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const type = btn.dataset.type;
+              let content = '';
+              if (type === 'fakulte') {
+                const fakulteList = [...new Set(bolumler.map(b => b.FAKÜLTE_ADI))];
+                content = '<h3>Fakülteler</h3><ul>' + 
+                  fakulteList.map(f => `<li>${f}</li>`).join('') + '</ul>';
+              } else if (type === 'bolum') {
+                content = '<h3>Bölümler</h3><ul>' + 
+                  bolumler.map(b => `<li>${b.BOLUM_ADI}</li>`).join('') + '</ul>';
+              } else if (type === 'personel') {
+                content = '<h3>Personeller</h3><ul>' + 
+                  personeller.map(p => `<li>${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</li>`).join('') + '</ul>';
+              }
+              document.getElementById('infoContent').innerHTML = content;
             });
           });
         });
