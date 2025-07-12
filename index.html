@@ -20,9 +20,14 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
     }
     .menu-tabs .tab:hover {
-      background-color: #ccc;
+      background-color: #ddd;
+    }
+    .menu-tabs .tab.active {
+      background-color: #007bff;
+      color: white;
     }
     body.dark-mode {
       background-color: #1e1e1e;
@@ -34,6 +39,10 @@
     }
     .dark-mode .tab:hover {
       background-color: #555;
+    }
+    .dark-mode .tab.active {
+      background-color: #007bff;
+      color: white;
     }
     .dark-mode .info-panel {
       background-color: #2a2a2a;
@@ -66,7 +75,7 @@
 
   <!-- Menü Sekmeleri -->
   <nav class="menu-tabs">
-    <button class="tab" data-type="fakulte">🏛️ Fakülteler</button>
+    <button class="tab active" data-type="fakulte">🏛️ Fakülteler</button>
     <button class="tab" data-type="bolum">📚 Bölümler</button>
     <button class="tab" data-type="personel">👤 Personeller</button>
   </nav>
@@ -82,6 +91,14 @@
 
   <!-- JS Bağlantıları -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    document.querySelectorAll('.menu-tabs .tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.menu-tabs .tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+  </script>
   <script src="main.js"></script>
 </body>
 </html>
