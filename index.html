@@ -71,7 +71,7 @@
       attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    let bolumler = [], katlar = [], personeller = [];
+    let bolumler = [], katlar = [], personeller = [], fakulteLayer;
 
     Promise.all([
       fetch('data/bolumler.json').then(res => res.json()),
@@ -85,7 +85,7 @@
       fetch('data/FAKULTE.json')
         .then(res => res.json())
         .then(fakulteData => {
-          const fakulteLayer = L.geoJSON(fakulteData, {
+          fakulteLayer = L.geoJSON(fakulteData, {
             onEachFeature: (feature, layer) => {
               const fakulteAdi = feature.properties.ADI || feature.properties.FAKULTE_ADI || "Bilinmeyen Fakülte";
               const bolumlerInFakulte = bolumler.filter(b => b.FAKÜLTE_ADI === fakulteAdi);
@@ -126,12 +126,12 @@
 
           map.fitBounds(fakulteLayer.getBounds());
 
-          // Arama fonksiyonu
+          // 🔍 Arama Fonksiyonu
           document.getElementById('searchInput').addEventListener('input', function () {
-            const searchTerm = this.value.toLowerCase();
+            const term = this.value.toLowerCase();
             fakulteLayer.eachLayer(layer => {
               const adi = layer.feature.properties.ADI || "";
-              if (adi.toLowerCase().includes(searchTerm)) {
+              if (adi.toLowerCase().includes(term)) {
                 layer.setStyle({ color: '#ff6600' });
                 layer.openPopup();
               } else {
@@ -140,21 +140,18 @@
             });
           });
 
-          // Menü sekmelerine tıklanınca info panelini güncelle
+          // 📂 Menü Sekmeleri Etkileşimi
           document.querySelectorAll('.menu-tabs .tab').forEach(btn => {
             btn.addEventListener('click', () => {
               const type = btn.dataset.type;
               let content = '';
               if (type === 'fakulte') {
                 const fakulteList = [...new Set(bolumler.map(b => b.FAKÜLTE_ADI))];
-                content = '<h3>Fakülteler</h3><ul>' + 
-                  fakulteList.map(f => `<li>${f}</li>`).join('') + '</ul>';
+                content = '<h3>Fakülteler</h3><ul>' + fakulteList.map(f => `<li>${f}</li>`).join('') + '</ul>';
               } else if (type === 'bolum') {
-                content = '<h3>Bölümler</h3><ul>' + 
-                  bolumler.map(b => `<li>${b.BOLUM_ADI}</li>`).join('') + '</ul>';
+                content = '<h3>Bölümler</h3><ul>' + bolumler.map(b => `<li>${b.BOLUM_ADI}</li>`).join('') + '</ul>';
               } else if (type === 'personel') {
-                content = '<h3>Personeller</h3><ul>' + 
-                  personeller.map(p => `<li>${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</li>`).join('') + '</ul>';
+                content = '<h3>Personeller</h3><ul>' + personeller.map(p => `<li>${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</li>`).join('') + '</ul>';
               }
               document.getElementById('infoContent').innerHTML = content;
             });
