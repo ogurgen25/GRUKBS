@@ -24,6 +24,17 @@
     .menu-tabs .tab:hover {
       background-color: #ccc;
     }
+    body.dark-mode {
+      background-color: #1e1e1e;
+      color: white;
+    }
+    .dark-mode .tab {
+      background-color: #333;
+      color: white;
+    }
+    .dark-mode .tab:hover {
+      background-color: #555;
+    }
   </style>
 </head>
 <body>
@@ -34,6 +45,10 @@
     </div>
     <div class="header-right">
       <input type="text" id="searchInput" placeholder="Ara: fakülte, bölüm, personel...">
+      <select id="katFilter">
+        <option value="">Tüm Katlar</option>
+      </select>
+      <button id="themeToggle">🌗 Tema</button>
     </div>
   </header>
 
@@ -82,6 +97,14 @@
       katlar = katData;
       personeller = personelData;
 
+      // Kat filtreleri
+      katlar.forEach(k => {
+        const option = document.createElement('option');
+        option.value = k.KAT_ID;
+        option.textContent = k.KAT_ADI;
+        document.getElementById('katFilter').appendChild(option);
+      });
+
       fetch('data/FAKULTE.json')
         .then(res => res.json())
         .then(fakulteData => {
@@ -91,25 +114,21 @@
               const bolumlerInFakulte = bolumler.filter(b => b.FAKÜLTE_ADI === fakulteAdi);
 
               let content = `<h3>${fakulteAdi}</h3>`;
-              if (bolumlerInFakulte.length === 0) {
-                content += "<p>Hiç bölüm kaydı yok.</p>";
-              } else {
-                bolumlerInFakulte.forEach(bolum => {
-                  const kat = katlar.find(k => k.KAT_ID === bolum.KAT_ID);
-                  const personelList = personeller.filter(p => p.BOLUM_ID === bolum.BOLUM_ID);
-                  content += `
-                    <div style="margin-top:8px; padding:5px; border-top:1px solid #ccc;">
-                      <strong>Bölüm:</strong> ${bolum.BOLUM_ADI}<br>
-                      <strong>Kat:</strong> ${kat ? kat.KAT_ADI : "Belirsiz"}<br>
-                      <strong>Bölüm Başkanı:</strong> ${bolum.BOLUM_BASKANI || "Yok"}<br>
-                      <strong>Personeller:</strong>
-                      <ul>
-                        ${personelList.map(p => `<li>${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</li>`).join("")}
-                      </ul>
-                    </div>
-                  `;
-                });
-              }
+              bolumlerInFakulte.forEach(bolum => {
+                const kat = katlar.find(k => k.KAT_ID === bolum.KAT_ID);
+                const personelList = personeller.filter(p => p.BOLUM_ID === bolum.BOLUM_ID);
+                content += `
+                  <div style="margin-top:8px; padding:5px; border-top:1px solid #ccc;">
+                    <strong>Bölüm:</strong> ${bolum.BOLUM_ADI}<br>
+                    <strong>Kat:</strong> ${kat ? kat.KAT_ADI : "Belirsiz"}<br>
+                    <strong>Bölüm Başkanı:</strong> ${bolum.BOLUM_BASKANI || "Yok"}<br>
+                    <strong>Personeller:</strong>
+                    <ul>
+                      ${personelList.map(p => `<li>${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</li>`).join("")}
+                    </ul>
+                  </div>
+                `;
+              });
 
               layer.on('click', () => {
                 document.getElementById('infoContent').innerHTML = content;
@@ -126,7 +145,6 @@
 
           map.fitBounds(fakulteLayer.getBounds());
 
-          // 🔍 Arama Fonksiyonu
           document.getElementById('searchInput').addEventListener('input', function () {
             const term = this.value.toLowerCase();
             fakulteLayer.eachLayer(layer => {
@@ -140,7 +158,14 @@
             });
           });
 
-          // 📂 Menü Sekmeleri Etkileşimi
+          document.getElementById('katFilter').addEventListener('change', function () {
+            const selectedKat = this.value;
+            let content = '<h3>Kat Filtresi</h3>';
+            const bolumFiltered = selectedKat ? bolumler.filter(b => b.KAT_ID == selectedKat) : bolumler;
+            content += '<ul>' + bolumFiltered.map(b => `<li>${b.BOLUM_ADI}</li>`).join('') + '</ul>';
+            document.getElementById('infoContent').innerHTML = content;
+          });
+
           document.querySelectorAll('.menu-tabs .tab').forEach(btn => {
             btn.addEventListener('click', () => {
               const type = btn.dataset.type;
@@ -155,6 +180,11 @@
               }
               document.getElementById('infoContent').innerHTML = content;
             });
+          });
+
+          // 🌗 Tema değiştirme
+          document.getElementById('themeToggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
           });
         });
     });
