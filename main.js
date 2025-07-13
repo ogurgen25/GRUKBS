@@ -4,7 +4,11 @@ const map = L.map("map", {
     [40.912, 38.317],  // Güneybatı köşesi
     [40.918, 38.326]   // Kuzeydoğu köşesi
   ],
-  maxBoundsViscosity: 1.0  // Sert sınır (kayamaz)
+  maxBoundsViscosity: 1.0,
+  minZoom: 16,           // yakınlaştırma sınırı
+  maxZoom: 22,
+  zoomSnap: 0.5,
+  zoomDelta: 0.5
 }).setView([40.915, 38.321], 17);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
