@@ -96,4 +96,24 @@ function showPersonelDetail(adSoyad, unvan, email, telefon) {
     .setLatLng(map.getCenter())
     .setContent(popup)
     .openOn(map);
+  document.getElementById("gotoBtn").addEventListener("click", () => {
+  if (!selectedPersonel || !selectedPersonel.lat || !selectedPersonel.lng) {
+    alert("Personelin konumu tanımlı değil.");
+    return;
+  }
+
+  if (routeControl) {
+    map.removeControl(routeControl);
+  }
+
+  routeControl = L.Routing.control({
+    waypoints: [
+      L.latLng(map.getCenter()), // başlangıç noktası (şu anki harita merkezi)
+      L.latLng(selectedPersonel.lat, selectedPersonel.lng) // hedef kişi
+    ],
+    routeWhileDragging: false,
+    show: false,
+    draggableWaypoints: false
+  }).addTo(map);
+});
 }
