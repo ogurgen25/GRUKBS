@@ -118,6 +118,11 @@
         onEachFeature: (feature, layer) => {
           const fakulteAdi = feature.properties.FAKULTE_ADI;
           layer.bindPopup(`<b>${fakulteAdi}</b>`);
+          layer.bindTooltip(fakulteAdi.toUpperCase(), {
+  permanent: true,
+  direction: 'center',
+  className: 'label-bold'
+});
           layer.on("click", () => {
             map.fitBounds(layer.getBounds());
             document.getElementById("fakulteSec").value = feature.properties.FAKULTE_ID;
