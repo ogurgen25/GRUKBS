@@ -1,6 +1,7 @@
 // Navigasyon kontrol değişkenleri
 let selectedPersonel = null;
 let routeControl = null;
+let selectedFakulteGeometry = null;
 // Harita Oluşturma
 const map = L.map("map", {
   center: [40.915, 38.321],
@@ -80,6 +81,15 @@ Promise.all([
 });
 
 // Personel Detaylarını Gösteren Açılır Pencere
+selectedPersonel = { adSoyad, unvan, email, telefon };
+document.getElementById("gotoBtn").disabled = false;
+
+// Bağlı olduğu fakültenin geometrisini ata
+const bolum = bolumler.find(b => b.BOLUM_BASKANI === adSoyad || b.BOLUM_ADI.includes(adSoyad.split(" ")[1]));
+if (bolum) {
+  const fakulte = fakulteGeoJSON.features.find(f => f.properties.ADI === bolum.FAKÜLTE_ADI);
+  if (fakulte) selectedFakulteGeometry = fakulte.geometry;
+}
 function showPersonelDetail(adSoyad, unvan, email, telefon) {
   selectedPersonel = { adSoyad, unvan, email, telefon };
   document.getElementById("gotoBtn").disabled = false;
@@ -113,6 +123,29 @@ function showPersonelDetail(adSoyad, unvan, email, telefon) {
     ],
     routeWhileDragging: false,
     show: false,
+    draggableWaypoints: false
+  }).addTo(map);
+});
+  document.getElementById("gotoBtn").addEventListener("click", () => {
+  if (!selectedFakulteGeometry) {
+    alert("Fakülte konumu bulunamadı.");
+    return;
+  }
+
+  if (routeControl) {
+    map.removeControl(routeControl);
+  }
+
+  const targetCenter = L.geoJSON(selectedFakulteGeometry).getBounds().getCenter();
+
+  routeControl = L.Routing.control({
+    waypoints: [
+      map.getCenter(),  // Başlangıç noktası
+      targetCenter      // Fakültenin ortası
+    ],
+    routeWhileDragging: false,
+    show: false,
+    addWaypoints: false,
     draggableWaypoints: false
   }).addTo(map);
 });
