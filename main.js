@@ -1,4 +1,5 @@
-// Harita nesnesini tanımla
+// Giresun Üniversitesi Kampüs Bilgi Sistemi - Gelişmiş main.js
+
 const map = L.map('map', {
   center: [40.915297, 38.321793],
   zoom: 18,
@@ -9,16 +10,13 @@ const map = L.map('map', {
   maxBoundsViscosity: 1.0
 });
 
-// Tile katmanı ekle
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 22,
   attribution: '© OpenStreetMap'
 }).addTo(map);
 
-// JSON veri kaynakları
-let bolumler = [], katlar = [], personeller = [];
+let bolumler = [], katlar = [], personeller = [], geojsonLayer;
 
-// JSON dosyalarını oku
 Promise.all([
   fetch('data/bolumler.json').then(res => res.json()),
   fetch('data/katlar.json').then(res => res.json()),
@@ -28,18 +26,16 @@ Promise.all([
   katlar = katData;
   personeller = personelData;
 
-  // FAKULTE katmanını yükle
   fetch('data/FAKULTE.json')
     .then(res => res.json())
     .then(fakulteData => {
-      const fakulteLayer = L.geoJSON(fakulteData, {
+      geojsonLayer = L.geoJSON(fakulteData, {
         onEachFeature: (feature, layer) => {
-          const props = feature.properties || {};
-          const fakulteAdi = props.ADI || props.FAKULTE_ADI || "Bilinmeyen Fakülte";
-
+          const fakulteAdi = feature.properties.ADI || feature.properties.FAKULTE_ADI || "Bilinmeyen Fakülte";
           const bolumlerInFakulte = bolumler.filter(b => b.FAKÜLTE_ADI === fakulteAdi);
 
           let content = `<h3>${fakulteAdi}</h3>`;
+
           if (bolumlerInFakulte.length === 0) {
             content += "<p>Hiç bölüm kaydı yok.</p>";
           } else {
@@ -47,8 +43,8 @@ Promise.all([
               const kat = katlar.find(k => k.KAT_ID === bolum.KAT_ID);
               const personelList = personeller.filter(p => p.BOLUM_ID === bolum.BOLUM_ID);
               content += `
-                <div style="margin-top:8px; padding:5px; border-top:1px solid #ccc;">
-                  <strong>Bölüm:</strong> ${bolum.BOLUM_ADI}<br>
+                <div class="person-card">
+                  <strong>Bölüm:</strong> <span class="clickable" onclick="zoomToFakulte('${fakulteAdi}')">${bolum.BOLUM_ADI}</span><br>
                   <strong>Kat:</strong> ${kat ? kat.KAT_ADI : "Belirsiz"}<br>
                   <strong>Bölüm Başkanı:</strong> ${bolum.BOLUM_BASKANI || "Yok"}<br>
                   <strong>Personeller:</strong>
@@ -73,7 +69,45 @@ Promise.all([
         }
       }).addTo(map);
 
-      // Harita görünümünü fakültelerin sınırına göre ayarla
-      map.fitBounds(fakulteLayer.getBounds());
+      map.fitBounds(geojsonLayer.getBounds());
+
+      // Kat filtreleri
+      const katSelect = document.getElementById('katFilter');
+      const uniqueKatlar = [...new Set(katlar.map(k => k.KAT_ADI))];
+      uniqueKatlar.forEach(kat => {
+        const opt = document.createElement('option');
+        opt.value = kat;
+        opt.textContent = kat;
+        katSelect.appendChild(opt);
+      });
+
+      katSelect.addEventListener('change', () => {
+        const selectedKat = katSelect.value;
+        if (!selectedKat) return geojsonLayer.setStyle({ fillOpacity: 0.3 });
+
+        geojsonLayer.setStyle(feature => {
+          const fakulteAdi = feature.properties.ADI || feature.properties.FAKULTE_ADI;
+          const ilgiliBolumler = bolumler.filter(b => b.FAKÜLTE_ADI === fakulteAdi);
+          const katUyumlu = ilgiliBolumler.some(b => {
+            const katObj = katlar.find(k => k.KAT_ID === b.KAT_ID);
+            return katObj && katObj.KAT_ADI === selectedKat;
+          });
+          return {
+            fillOpacity: katUyumlu ? 0.5 : 0.1,
+            color: katUyumlu ? '#0099ff' : '#999'
+          };
+        });
+      });
     });
 });
+
+function zoomToFakulte(fakulteAdi) {
+  if (!geojsonLayer) return;
+  geojsonLayer.eachLayer(layer => {
+    const ad = layer.feature.properties.ADI || layer.feature.properties.FAKULTE_ADI;
+    if (ad === fakulteAdi) {
+      map.fitBounds(layer.getBounds());
+      layer.openPopup();
+    }
+  });
+}
