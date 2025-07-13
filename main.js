@@ -32,7 +32,7 @@ Promise.all([
       geojsonLayer = L.geoJSON(fakulteData, {
         onEachFeature: (feature, layer) => {
           const fakulteAdi = feature.properties.ADI || feature.properties.FAKULTE_ADI || "Bilinmeyen Fakülte";
-          const bolumlerInFakulte = bolumler.filter(b => b.FAKÜLTE_ADI === fakulteAdi);
+          const bolumlerInFakulte = bolumler.filter(b => b.FAKULTE_ADI === fakulteAdi);
 
           let content = `<h3>${fakulteAdi}</h3>`;
 
@@ -49,7 +49,7 @@ Promise.all([
                   <strong>Bölüm Başkanı:</strong> ${bolum.BOLUM_BASKANI || "Yok"}<br>
                   <strong>Personeller:</strong>
                   <ul>
-                    ${personelList.map(p => `<li><a href="#" onclick="showPersonelPopup('${p.AD_SOYAD}', '${p.UNVAN}', '${p.EPOSTA}', '${p.TELEFON}')">${p.AD_SOYAD}</a></li>`).join("")}
+                    ${personelList.map(p => `<li><a href="#" onclick='showPersonelDetail(${JSON.stringify(p)})'>${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</a></li>`).join("")}
                   </ul>
                 </div>
               `;
@@ -70,34 +70,6 @@ Promise.all([
       }).addTo(map);
 
       map.fitBounds(geojsonLayer.getBounds());
-
-      // Kat filtreleri
-      const katSelect = document.getElementById('katFilter');
-      const uniqueKatlar = [...new Set(katlar.map(k => k.KAT_ADI))];
-      uniqueKatlar.forEach(kat => {
-        const opt = document.createElement('option');
-        opt.value = kat;
-        opt.textContent = kat;
-        katSelect.appendChild(opt);
-      });
-
-      katSelect.addEventListener('change', () => {
-        const selectedKat = katSelect.value;
-        if (!selectedKat) return geojsonLayer.setStyle({ fillOpacity: 0.3 });
-
-        geojsonLayer.setStyle(feature => {
-          const fakulteAdi = feature.properties.ADI || feature.properties.FAKULTE_ADI;
-          const ilgiliBolumler = bolumler.filter(b => b.FAKÜLTE_ADI === fakulteAdi);
-          const katUyumlu = ilgiliBolumler.some(b => {
-            const katObj = katlar.find(k => k.KAT_ID === b.KAT_ID);
-            return katObj && katObj.KAT_ADI === selectedKat;
-          });
-          return {
-            fillOpacity: katUyumlu ? 0.5 : 0.1,
-            color: katUyumlu ? '#0099ff' : '#999'
-          };
-        });
-      });
     });
 });
 
@@ -112,14 +84,16 @@ function zoomToFakulte(fakulteAdi) {
   });
 }
 
-function showPersonelPopup(ad, unvan, eposta, telefon) {
-  const popup = L.popup()
-    .setLatLng(map.getCenter())
-    .setContent(`
-      <strong>${ad}</strong><br>
-      Ünvan: ${unvan || 'Bilinmiyor'}<br>
-      E-posta: ${eposta || 'Yok'}<br>
-      Telefon: ${telefon || 'Yok'}
-    `)
-    .openOn(map);
+function showPersonelDetail(p) {
+  const detailHTML = `
+    <div class="personel-popup">
+      <h3>${p.AD_SOYAD}</h3>
+      <p><strong>Unvan:</strong> ${p.UNVAN || 'Bilinmiyor'}</p>
+      <p><strong>Telefon:</strong> ${p.TELEFON || '-'}</p>
+      <p><strong>E-posta:</strong> ${p.EMAIL || '-'}</p>
+      <p><strong>Oda No:</strong> ${p.ODA_NO || '-'}</p>
+      <p><strong>Ek Bilgi:</strong> ${p.EK_BILGI || '-'}</p>
+    </div>
+  `;
+  document.getElementById('infoContent').innerHTML = detailHTML;
 }
