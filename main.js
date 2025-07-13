@@ -83,16 +83,18 @@ function zoomToFakulte(fakulteAdi) {
   });
 }
 
-function showPersonelDetail(p) {
+function showPersonelDetail(personelStr) {
+  const personel = JSON.parse(decodeURIComponent(personelStr));
   const detailHTML = `
-    <div class="personel-popup">
-      <h3>${p.AD_SOYAD}</h3>
-      <p><strong>Unvan:</strong> ${p.UNVAN || 'Bilinmiyor'}</p>
-      <p><strong>Telefon:</strong> ${p.TELEFON || '-'}</p>
-      <p><strong>E-posta:</strong> ${p.EMAIL || '-'}</p>
-      <p><strong>Oda No:</strong> ${p.ODA_NO || '-'}</p>
-      <p><strong>Ek Bilgi:</strong> ${p.EK_BILGI || '-'}</p>
+    <div class="personel-detail">
+      <strong>Ad Soyad:</strong> ${personel.AD_SOYAD}<br>
+      <strong>Ünvan:</strong> ${personel.UNVAN || "Yok"}<br>
+      <strong>E-posta:</strong> ${personel.EMAIL || "Bilinmiyor"}<br>
+      <strong>Telefon:</strong> ${personel.TELEFON || "Bilinmiyor"}<br>
+      <strong>Oda No:</strong> ${personel.ODA || "Bilinmiyor"}<br>
+      <strong>Bölüm ID:</strong> ${personel.BOLUM_ID}
     </div>
   `;
-  document.getElementById('infoContent').innerHTML = detailHTML;
+  const info = document.getElementById('infoContent');
+  info.innerHTML = detailHTML;
 }
