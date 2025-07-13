@@ -1,3 +1,6 @@
+// Navigasyon kontrol değişkenleri
+let selectedPersonel = null;
+let routeControl = null;
 // Harita Oluşturma
 const map = L.map("map", {
   center: [40.915, 38.321],
