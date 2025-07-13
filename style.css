@@ -54,22 +54,7 @@ body {
   color: #003366;
 }
 
-/* Mobil Görünüm */
-@media (max-width: 768px) {
-  .app-body {
-    flex-direction: column;
-  }
-
-  .map-container {
-    height: 60vh;
-  }
-
-  .info-panel {
-    height: 40vh;
-    border-left: none;
-    border-top: 1px solid #ccc;
-  }
-  /* Fakülte başlığı */
+/* Fakülte başlığı */
 .fakulte-title {
   font-size: 20px;
   font-weight: bold;
@@ -113,5 +98,20 @@ body {
   border-radius: 6px;
   line-height: 1.5;
 }
-}
 
+/* Mobil Görünüm */
+@media (max-width: 768px) {
+  .app-body {
+    flex-direction: column;
+  }
+
+  .map-container {
+    height: 60vh;
+  }
+
+  .info-panel {
+    height: 40vh;
+    border-left: none;
+    border-top: 1px solid #ccc;
+  }
+}
