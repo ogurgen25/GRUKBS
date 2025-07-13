@@ -36,25 +36,24 @@ Promise.all([
 
           let content = `<h3>${fakulteAdi}</h3>`;
 
-          if (bolumlerInFakulte.length === 0) {
-            content += "<p>Hiç bölüm kaydı yok.</p>";
-          } else {
-            bolumlerInFakulte.forEach(bolum => {
-              const kat = katlar.find(k => k.KAT_ID === bolum.KAT_ID);
-              const personelList = personeller.filter(p => p.BOLUM_ID === bolum.BOLUM_ID);
-              content += `
-                <div class="person-card">
-                  <strong>Bölüm:</strong> <span class="clickable" onclick="zoomToFakulte('${fakulteAdi}')">${bolum.BOLUM_ADI}</span><br>
-                  <strong>Kat:</strong> ${kat ? kat.KAT_ADI : "Belirsiz"}<br>
-                  <strong>Bölüm Başkanı:</strong> ${bolum.BOLUM_BASKANI || "Yok"}<br>
-                  <strong>Personeller:</strong>
-                  <ul>
-                    ${personelList.map(p => `<li><a href="#" onclick='showPersonelDetail(${JSON.stringify(p)})'>${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</a></li>`).join("")}
-                  </ul>
-                </div>
-              `;
-            });
-          }
+         let content = `<div class="fakulte-title">${fakulteAdi}</div>`;
+
+if (bolumlerInFakulte.length === 0) {
+  content += "<p>Hiç bölüm kaydı yok.</p>";
+} else {
+  bolumlerInFakulte.forEach(bolum => {
+    const kat = katlar.find(k => k.KAT_ID === bolum.KAT_ID);
+    const personelList = personeller.filter(p => p.BOLUM_ID === bolum.BOLUM_ID);
+    content += `
+      <div class="bolum-card">
+        <strong>Bölüm:</strong> ${bolum.BOLUM_ADI}<br>
+        <strong>Kat:</strong> ${kat ? kat.KAT_ADI : "Belirsiz"}<br>
+        <strong>Bölüm Başkanı:</strong> ${bolum.BOLUM_BASKANI || "Yok"}<br>
+        <strong>Personeller:</strong>
+        <ul class="personel-list">
+          ${personelList.map(p => `
+            <li onclick="showPersonelDetail('${encodeURIComponent(JSON.stringify(p))}')">
+              ${p.A
 
           layer.on('click', () => {
             document.getElementById('infoContent').innerHTML = content;
