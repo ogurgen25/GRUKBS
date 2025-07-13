@@ -79,20 +79,41 @@ Promise.all([
       }).addTo(map);
     });
 });
-
-// Personel Detaylarını Gösteren Açılır Pencere
-selectedPersonel = { adSoyad, unvan, email, telefon };
-document.getElementById("gotoBtn").disabled = false;
-
-// Bağlı olduğu fakültenin geometrisini ata
-const bolum = bolumler.find(b => b.BOLUM_BASKANI === adSoyad || b.BOLUM_ADI.includes(adSoyad.split(" ")[1]));
-if (bolum) {
-  const fakulte = fakulteGeoJSON.features.find(f => f.properties.ADI === bolum.FAKÜLTE_ADI);
-  if (fakulte) selectedFakulteGeometry = fakulte.geometry;
-}
 function showPersonelDetail(adSoyad, unvan, email, telefon) {
   selectedPersonel = { adSoyad, unvan, email, telefon };
   document.getElementById("gotoBtn").disabled = false;
+
+  // Bağlı olduğu fakültenin geometrisini ata
+  const bolum = bolumler.find(b => b.BOLUM_BASKANI === adSoyad || b.BOLUM_ADI.includes(adSoyad.split(" ")[1]));
+  if (bolum) {
+    const fakulte = fakulteGeoJSON.features.find(f => f.properties.ADI === bolum.FAKÜLTE_ADI);
+    if (fakulte) selectedFakulteGeometry = fakulte.geometry;
+  }
+
+  // Gidilecek rota oluştur
+  document.getElementById("gotoBtn").addEventListener("click", () => {
+    if (!selectedFakulteGeometry) {
+      alert("Fakülte konumu bulunamadı.");
+      return;
+    }
+
+    if (routeControl) {
+      map.removeControl(routeControl);
+    }
+
+    const targetCenter = L.geoJSON(selectedFakulteGeometry).getBounds().getCenter();
+
+    routeControl = L.Routing.control({
+      waypoints: [
+        map.getCenter(),
+        targetCenter
+      ],
+      routeWhileDragging: false,
+      show: false,
+      addWaypoints: false,
+      draggableWaypoints: false
+    }).addTo(map);
+  });
 
   const popup = `
     <div class='personel-detail'>
@@ -106,47 +127,4 @@ function showPersonelDetail(adSoyad, unvan, email, telefon) {
     .setLatLng(map.getCenter())
     .setContent(popup)
     .openOn(map);
-  document.getElementById("gotoBtn").addEventListener("click", () => {
-  if (!selectedPersonel || !selectedPersonel.lat || !selectedPersonel.lng) {
-    alert("Personelin konumu tanımlı değil.");
-    return;
-  }
-
-  if (routeControl) {
-    map.removeControl(routeControl);
-  }
-
-  routeControl = L.Routing.control({
-    waypoints: [
-      L.latLng(map.getCenter()), // başlangıç noktası (şu anki harita merkezi)
-      L.latLng(selectedPersonel.lat, selectedPersonel.lng) // hedef kişi
-    ],
-    routeWhileDragging: false,
-    show: false,
-    draggableWaypoints: false
-  }).addTo(map);
-});
-  document.getElementById("gotoBtn").addEventListener("click", () => {
-  if (!selectedFakulteGeometry) {
-    alert("Fakülte konumu bulunamadı.");
-    return;
-  }
-
-  if (routeControl) {
-    map.removeControl(routeControl);
-  }
-
-  const targetCenter = L.geoJSON(selectedFakulteGeometry).getBounds().getCenter();
-
-  routeControl = L.Routing.control({
-    waypoints: [
-      map.getCenter(),  // Başlangıç noktası
-      targetCenter      // Fakültenin ortası
-    ],
-    routeWhileDragging: false,
-    show: false,
-    addWaypoints: false,
-    draggableWaypoints: false
-  }).addTo(map);
-});
 }
