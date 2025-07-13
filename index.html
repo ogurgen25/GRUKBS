@@ -37,13 +37,16 @@
       border-radius: 4px;
       border: 1px solid #ccc;
     }
-    .label-bold {
+  .label-bold {
   font-weight: bold;
-  font-size: 14px;
+  font-size: 10px; /* Daha küçük font */
   text-transform: uppercase;
   color: black;
   text-shadow: 1px 1px 2px white;
-  pointer-events: none; /* Etikete tıklamayı engeller */
+  white-space: nowrap;
+  pointer-events: none;
+  max-width: 100px;
+  text-align: center;
 }
     #map {
       height: calc(100vh - 60px);
