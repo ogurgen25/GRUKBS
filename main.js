@@ -66,27 +66,6 @@ Promise.all([
           });
 
           layer.bindPopup(fakulteAdi);
-          // Etiket (tooltip) sabit gösterim
-          const center = layer.getBounds().getCenter();
-          layer.bindTooltip(fakulteAdi.toUpperCase(), {
-            permanent: true,
-            direction: 'center',
-            className: 'label-bold'
-          }).setLatLng(center);
-
-          // Zooma göre tooltip göster/gizle
-          layer._tooltipRef = layer.getTooltip();
-          layer._tooltipRef.remove();
-
-          map.on("zoomend", () => {
-            const currentZoom = map.getZoom();
-            if (currentZoom >= 18) {
-              if (!map.hasLayer(layer._tooltipRef)) layer._tooltipRef.addTo(map);
-            } else {
-              if (map.hasLayer(layer._tooltipRef)) map.removeLayer(layer._tooltipRef);
-            }
-          });
-    
         },
         style: {
           color: "#0066cc",
@@ -114,3 +93,361 @@ function showPersonelDetail(adSoyad, unvan, email, telefon) {
     .setContent(popup)
     .openOn(map);
 }
+
+
+
+fetch("data/LABORATUVARR_FeaturesToJSON1.json")
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: "#1f77b4",
+        weight: 2,
+        fillOpacity: 0.6
+      },
+      onEachFeature: function (feature, layer) {
+        let name = feature.properties.ADI || feature.properties.FAKULTE_ADI || feature.properties.BOLUM_ADI || "Yapı";
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'center',
+          className: 'label-inside'
+        });
+      }
+    }).addTo(map);
+  });
+
+
+fetch("data/KAPI_GİRİS.json")
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: "#ff7f0e",
+        weight: 2,
+        fillOpacity: 0.6
+      },
+      onEachFeature: function (feature, layer) {
+        let name = feature.properties.ADI || feature.properties.FAKULTE_ADI || feature.properties.BOLUM_ADI || "Yapı";
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'center',
+          className: 'label-inside'
+        });
+      }
+    }).addTo(map);
+  });
+
+
+fetch("data/BANKAMATİK_FeaturesToJSON.json")
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: "#2ca02c",
+        weight: 2,
+        fillOpacity: 0.6
+      },
+      onEachFeature: function (feature, layer) {
+        let name = feature.properties.ADI || feature.properties.FAKULTE_ADI || feature.properties.BOLUM_ADI || "Yapı";
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'center',
+          className: 'label-inside'
+        });
+      }
+    }).addTo(map);
+  });
+
+
+fetch("data/katlar.json")
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: "#d62728",
+        weight: 2,
+        fillOpacity: 0.6
+      },
+      onEachFeature: function (feature, layer) {
+        let name = feature.properties.ADI || feature.properties.FAKULTE_ADI || feature.properties.BOLUM_ADI || "Yapı";
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'center',
+          className: 'label-inside'
+        });
+      }
+    }).addTo(map);
+  });
+
+
+fetch("data/LABORATUVARR_FeaturesToJSON.json")
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: "#9467bd",
+        weight: 2,
+        fillOpacity: 0.6
+      },
+      onEachFeature: function (feature, layer) {
+        let name = feature.properties.ADI || feature.properties.FAKULTE_ADI || feature.properties.BOLUM_ADI || "Yapı";
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'center',
+          className: 'label-inside'
+        });
+      }
+    }).addTo(map);
+  });
+
+
+fetch("data/LOJMANLAR_FeaturesToJSON.json")
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: "#8c564b",
+        weight: 2,
+        fillOpacity: 0.6
+      },
+      onEachFeature: function (feature, layer) {
+        let name = feature.properties.ADI || feature.properties.FAKULTE_ADI || feature.properties.BOLUM_ADI || "Yapı";
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'center',
+          className: 'label-inside'
+        });
+      }
+    }).addTo(map);
+  });
+
+
+fetch("data/KÜTÜPHANE_FeaturesToJSON.json")
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: "#e377c2",
+        weight: 2,
+        fillOpacity: 0.6
+      },
+      onEachFeature: function (feature, layer) {
+        let name = feature.properties.ADI || feature.properties.FAKULTE_ADI || feature.properties.BOLUM_ADI || "Yapı";
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'center',
+          className: 'label-inside'
+        });
+      }
+    }).addTo(map);
+  });
+
+
+fetch("data/bolumler.json")
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: "#7f7f7f",
+        weight: 2,
+        fillOpacity: 0.6
+      },
+      onEachFeature: function (feature, layer) {
+        let name = feature.properties.ADI || feature.properties.FAKULTE_ADI || feature.properties.BOLUM_ADI || "Yapı";
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'center',
+          className: 'label-inside'
+        });
+      }
+    }).addTo(map);
+  });
+
+
+fetch("data/REKTÖRLÜK_FeaturesToJSON.json")
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: "#bcbd22",
+        weight: 2,
+        fillOpacity: 0.6
+      },
+      onEachFeature: function (feature, layer) {
+        let name = feature.properties.ADI || feature.properties.FAKULTE_ADI || feature.properties.BOLUM_ADI || "Yapı";
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'center',
+          className: 'label-inside'
+        });
+      }
+    }).addTo(map);
+  });
+
+
+fetch("data/FAKULTE.json")
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: "#17becf",
+        weight: 2,
+        fillOpacity: 0.6
+      },
+      onEachFeature: function (feature, layer) {
+        let name = feature.properties.ADI || feature.properties.FAKULTE_ADI || feature.properties.BOLUM_ADI || "Yapı";
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'center',
+          className: 'label-inside'
+        });
+      }
+    }).addTo(map);
+  });
+
+
+fetch("data/ÜNİVERSİTE_BIRIMLER_Features.json")
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: "#a93226",
+        weight: 2,
+        fillOpacity: 0.6
+      },
+      onEachFeature: function (feature, layer) {
+        let name = feature.properties.ADI || feature.properties.FAKULTE_ADI || feature.properties.BOLUM_ADI || "Yapı";
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'center',
+          className: 'label-inside'
+        });
+      }
+    }).addTo(map);
+  });
+
+
+fetch("data/GÜVENLİK_FeaturesToJSON.json")
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: "#27ae60",
+        weight: 2,
+        fillOpacity: 0.6
+      },
+      onEachFeature: function (feature, layer) {
+        let name = feature.properties.ADI || feature.properties.FAKULTE_ADI || feature.properties.BOLUM_ADI || "Yapı";
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'center',
+          className: 'label-inside'
+        });
+      }
+    }).addTo(map);
+  });
+
+
+fetch("data/SPOR_SALONUU_FeaturesToJSON.json")
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: "#f39c12",
+        weight: 2,
+        fillOpacity: 0.6
+      },
+      onEachFeature: function (feature, layer) {
+        let name = feature.properties.ADI || feature.properties.FAKULTE_ADI || feature.properties.BOLUM_ADI || "Yapı";
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'center',
+          className: 'label-inside'
+        });
+      }
+    }).addTo(map);
+  });
+
+
+fetch("data/personel.json")
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: "#2980b9",
+        weight: 2,
+        fillOpacity: 0.6
+      },
+      onEachFeature: function (feature, layer) {
+        let name = feature.properties.ADI || feature.properties.FAKULTE_ADI || feature.properties.BOLUM_ADI || "Yapı";
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'center',
+          className: 'label-inside'
+        });
+      }
+    }).addTo(map);
+  });
+
+
+fetch("data/YESİLALAN_FeaturesToJSON.json")
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: "#1f77b4",
+        weight: 2,
+        fillOpacity: 0.6
+      },
+      onEachFeature: function (feature, layer) {
+        let name = feature.properties.ADI || feature.properties.FAKULTE_ADI || feature.properties.BOLUM_ADI || "Yapı";
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'center',
+          className: 'label-inside'
+        });
+      }
+    }).addTo(map);
+  });
+
+
+fetch("data/YOL_AGI.json")
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: "#ff7f0e",
+        weight: 2,
+        fillOpacity: 0.6
+      },
+      onEachFeature: function (feature, layer) {
+        let name = feature.properties.ADI || feature.properties.FAKULTE_ADI || feature.properties.BOLUM_ADI || "Yapı";
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'center',
+          className: 'label-inside'
+        });
+      }
+    }).addTo(map);
+  });
+
+
+fetch("data/YEMEKHANEE_FeaturesToJSON.json")
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: "#2ca02c",
+        weight: 2,
+        fillOpacity: 0.6
+      },
+      onEachFeature: function (feature, layer) {
+        let name = feature.properties.ADI || feature.properties.FAKULTE_ADI || feature.properties.BOLUM_ADI || "Yapı";
+        layer.bindTooltip(name, {
+          permanent: true,
+          direction: 'center',
+          className: 'label-inside'
+        });
+      }
+    }).addTo(map);
+  });
