@@ -49,7 +49,7 @@ Promise.all([
                   <strong>Bölüm Başkanı:</strong> ${bolum.BOLUM_BASKANI || "Yok"}<br>
                   <strong>Personeller:</strong>
                   <ul>
-                    ${personelList.map(p => `<li class="clickable" onclick="showPersonelDetail(${p.PERSONEL_ID})">${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</li>`).join("")}
+                    ${personelList.map(p => `<li><a href="#" onclick="showPersonelPopup('${p.AD_SOYAD}', '${p.UNVAN}', '${p.EPOSTA}', '${p.TELEFON}')">${p.AD_SOYAD}</a></li>`).join("")}
                   </ul>
                 </div>
               `;
@@ -112,22 +112,14 @@ function zoomToFakulte(fakulteAdi) {
   });
 }
 
-function showPersonelDetail(id) {
-  const personel = personeller.find(p => p.PERSONEL_ID === id);
-  if (!personel) return alert("Personel bilgisi bulunamadı.");
-
-  const content = `
-    <div style="font-family:sans-serif;">
-      <h3>${personel.AD_SOYAD}</h3>
-      <p><strong>Unvan:</strong> ${personel.UNVAN || 'Bilinmiyor'}</p>
-      <p><strong>E-posta:</strong> ${personel.EMAIL || '-'}</p>
-      <p><strong>Telefon:</strong> ${personel.TELEFON || '-'}</p>
-      <p><strong>Oda No:</strong> ${personel.ODA_NO || '-'}</p>
-      <p><strong>Durum:</strong> ${personel.DURUM || '-'}</p>
-    </div>
-  `;
-  L.popup()
+function showPersonelPopup(ad, unvan, eposta, telefon) {
+  const popup = L.popup()
     .setLatLng(map.getCenter())
-    .setContent(content)
+    .setContent(`
+      <strong>${ad}</strong><br>
+      Ünvan: ${unvan || 'Bilinmiyor'}<br>
+      E-posta: ${eposta || 'Yok'}<br>
+      Telefon: ${telefon || 'Yok'}
+    `)
     .openOn(map);
 }
