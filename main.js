@@ -1,5 +1,11 @@
 // Harita Oluşturma
-const map = L.map('map').setView([40.9153, 38.3218], 18);
+const map = L.map("map", {
+  maxBounds: [
+    [40.912, 38.317],  // Güneybatı köşesi
+    [40.918, 38.326]   // Kuzeydoğu köşesi
+  ],
+  maxBoundsViscosity: 1.0  // Sert sınır (kayamaz)
+}).setView([40.915, 38.321], 17);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 22,
