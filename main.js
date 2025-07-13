@@ -1,19 +1,21 @@
 // Harita Oluşturma
 const map = L.map("map", {
-  maxBounds: [
-    [40.912, 38.317],  // Güneybatı köşesi
-    [40.918, 38.326]   // Kuzeydoğu köşesi
-  ],
-  maxBoundsViscosity: 1.0,
-  minZoom: 16,           // yakınlaştırma sınırı
+  center: [40.915, 38.321],
+  zoom: 17,
+  minZoom: 16,
   maxZoom: 22,
-  zoomSnap: 0.5,
-  zoomDelta: 0.5
-}).setView([40.915, 38.321], 17);
+  maxBounds: [
+    [40.912, 38.317],
+    [40.918, 38.326]
+  ],
+  maxBoundsViscosity: 1.0
+});
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap',
+  noWrap: true, // bu önemli
   maxZoom: 22,
-  attribution: '© OpenStreetMap'
+  minZoom: 16
 }).addTo(map);
 
 // JSON Veri Kaynakları
