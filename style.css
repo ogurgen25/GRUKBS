@@ -69,5 +69,49 @@ body {
     border-left: none;
     border-top: 1px solid #ccc;
   }
+  /* Fakülte başlığı */
+.fakulte-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #004080;
+  background-color: #e0ecff;
+  padding: 8px 12px;
+  border-left: 5px solid #0059b3;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+
+/* Bölüm kartı */
+.bolum-card {
+  background-color: #f2f8ff;
+  border-left: 5px solid #3399ff;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+}
+
+/* Personel listesi */
+.personel-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 6px 0 0 0;
+}
+
+.personel-list li {
+  margin-bottom: 4px;
+  background-color: #e8f0fe;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+/* Personel detay popup */
+.personel-detail {
+  background-color: #fefefe;
+  border: 1px solid #ccc;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  line-height: 1.5;
+}
 }
 
