@@ -66,6 +66,11 @@ Promise.all([
           });
 
           layer.bindPopup(fakulteAdi);
+          layer.bindTooltip(fakulteAdi.toUpperCase(), {
+  permanent: true,
+  direction: 'center',
+  className: 'label-bold'
+});
         },
         style: {
           color: "#0066cc",
