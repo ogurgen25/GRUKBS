@@ -1,7 +1,8 @@
 // Navigasyon kontrol değişkenleri
 let selectedPersonel = null;
-let routeControl = null;
 let selectedFakulteGeometry = null;
+let routeControl = null;
+
 // Harita Oluşturma
 const map = L.map("map", {
   center: [40.915, 38.321],
@@ -17,13 +18,13 @@ const map = L.map("map", {
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap',
-  noWrap: true, // bu önemli
+  noWrap: true,
   maxZoom: 22,
   minZoom: 16
 }).addTo(map);
 
 // JSON Veri Kaynakları
-let bolumler = [], katlar = [], personeller = [];
+let bolumler = [], katlar = [], personeller = [], fakulteGeoJSON = null;
 
 Promise.all([
   fetch('data/bolumler.json').then(res => res.json()),
@@ -34,10 +35,10 @@ Promise.all([
   katlar = katData;
   personeller = personelData;
 
-  // Fakülte Katmanını Yükle
   fetch('data/FAKULTE.json')
     .then(res => res.json())
     .then(fakulteData => {
+      fakulteGeoJSON = fakulteData;
       const geojsonLayer = L.geoJSON(fakulteData, {
         onEachFeature: (feature, layer) => {
           const fakulteAdi = feature.properties.ADI || "Bilinmeyen Fakülte";
@@ -79,18 +80,18 @@ Promise.all([
       }).addTo(map);
     });
 });
+
+// Personel Detaylarını Gösteren Açılır Pencere
 function showPersonelDetail(adSoyad, unvan, email, telefon) {
   selectedPersonel = { adSoyad, unvan, email, telefon };
   document.getElementById("gotoBtn").disabled = false;
 
-  // Bağlı olduğu fakültenin geometrisini ata
   const bolum = bolumler.find(b => b.BOLUM_BASKANI === adSoyad || b.BOLUM_ADI.includes(adSoyad.split(" ")[1]));
   if (bolum) {
     const fakulte = fakulteGeoJSON.features.find(f => f.properties.ADI === bolum.FAKÜLTE_ADI);
     if (fakulte) selectedFakulteGeometry = fakulte.geometry;
   }
 
-  // Gidilecek rota oluştur
   document.getElementById("gotoBtn").addEventListener("click", () => {
     if (!selectedFakulteGeometry) {
       alert("Fakülte konumu bulunamadı.");
