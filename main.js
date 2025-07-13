@@ -42,7 +42,7 @@ Promise.all([
       const geojsonLayer = L.geoJSON(fakulteData, {
         onEachFeature: (feature, layer) => {
           const fakulteAdi = feature.properties.ADI || "Bilinmeyen Fakülte";
-          const bolumlerInFakulte = bolumler.filter(b => b.FAKÜLTE_ADI === fakulteAdi);
+          const bolumlerInFakulte = bolumler.filter(b => b.ADI === fakulteAdi);
 
           let content = `<div class='fakulte-title'>🏛️ ${fakulteAdi}</div>`;
 
