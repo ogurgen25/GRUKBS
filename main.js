@@ -1,138 +1,95 @@
-
-let map = L.map("map").setView([40.915, 38.321], 18);
-
-// Tile katmanı
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: '&copy; OpenStreetMap katkıcıları',
-  maxZoom: 20,
-}).addTo(map);
-
-// Harita sınırlarını belirle
-const bounds = L.latLngBounds(
-  L.latLng(40.913, 38.319),
-  L.latLng(40.917, 38.323)
-);
-map.setMaxBounds(bounds);
-map.on("drag", function () {
-  map.panInsideBounds(bounds, { animate: false });
+// Harita Oluşturma
+const map = L.map("map", {
+  center: [40.915, 38.321],
+  zoom: 17,
+  minZoom: 16,
+  maxZoom: 22,
+  maxBounds: [
+    [40.912, 38.317],
+    [40.918, 38.326]
+  ],
+  maxBoundsViscosity: 1.0
 });
 
-// Fakülte GeoJSON verisini yükle
-let fakulteLayer;
-fetch("FAKULTE.json")
-  .then((res) => res.json())
-  .then((data) => {
-    fakulteGeoJSON = data;
-    fakulteLayer = L.geoJSON(data, {
-      style: {
-        color: "#003366",
-        weight: 2,
-        fillOpacity: 0.4,
-      },
-      onEachFeature: function (feature, layer) {
-        layer.on("click", function () {
-          const props = feature.properties;
-          const html = `
-            <strong>${props.FAKULTE_ADI}</strong><br>
-            Kat: ${props.ZEMINUSTUKAT}<br>
-            Bölüm Sayısı: ${props.BOLUM_SAYISI || "-"}<br>
-            Tel: ${props.TELEFON_NO || "-"}<br>
-            Web: ${props.WEB_ADRESI || "-"}
-          `;
-          L.popup().setLatLng(layer.getBounds().getCenter()).setContent(html).openOn(map);
-        });
-      },
-    }).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap',
+  noWrap: true, // bu önemli
+  maxZoom: 22,
+  minZoom: 16
+}).addTo(map);
 
-    initializeFakulteDropdown(); // Dropdown ilk yüklenince doldur
-  });
+// JSON Veri Kaynakları
+let bolumler = [], katlar = [], personeller = [];
 
-// Bölüm ve personel verilerini yükle
-let bolumler = [];
-let personeller = [];
+Promise.all([
+  fetch('data/bolumler.json').then(res => res.json()),
+  fetch('data/katlar.json').then(res => res.json()),
+  fetch('data/personel.json').then(res => res.json())
+]).then(([bolumData, katData, personelData]) => {
+  bolumler = bolumData;
+  katlar = katData;
+  personeller = personelData;
 
-fetch("bolumler.json")
-  .then((res) => res.json())
-  .then((data) => {
-    bolumler = data;
-  });
+  // Fakülte Katmanını Yükle
+  fetch('data/FAKULTE.json')
+    .then(res => res.json())
+    .then(fakulteData => {
+      const geojsonLayer = L.geoJSON(fakulteData, {
+        onEachFeature: (feature, layer) => {
+          const fakulteAdi = feature.properties.ADI || "Bilinmeyen Fakülte";
+          const bolumlerInFakulte = bolumler.filter(b => b.FAKÜLTE_ADI === fakulteAdi);
 
-fetch("personel.json")
-  .then((res) => res.json())
-  .then((data) => {
-    personeller = data;
-  });
+          let content = `<div class='fakulte-title'>🏛️ ${fakulteAdi}</div>`;
 
-// Fakülte dropdown doldurma
-function initializeFakulteDropdown() {
-  const fakulteDropdown = document.getElementById("fakulteSec");
+          if (bolumlerInFakulte.length === 0) {
+            content += "<p>Hiç bölüm kaydı yok.</p>";
+          } else {
+            bolumlerInFakulte.forEach(bolum => {
+              const kat = katlar.find(k => k.KAT_ID === bolum.KAT_ID);
+              const personelList = personeller.filter(p => p.BOLUM_ID === bolum.BOLUM_ID);
+              content += `
+                <div class='bolum-card'>
+                  <strong>📚 Bölüm:</strong> ${bolum.BOLUM_ADI}<br>
+                  <strong>🏢 Kat:</strong> ${kat ? kat.KAT_ADI : "Belirsiz"}<br>
+                  <strong>👤 Bölüm Başkanı:</strong> ${bolum.BOLUM_BASKANI || "Yok"}<br>
+                  <strong>👥 Personeller:</strong>
+                  <ul class='personel-list'>
+                    ${personelList.map(p => `<li onclick="showPersonelDetail('${p.AD_SOYAD}', '${p.UNVAN}', '${p.EMAIL}', '${p.TELEFON}')">${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</li>`).join("")}
+                  </ul>
+                </div>
+              `;
+            });
+          }
 
-  const fakulteIDs = [...new Set(bolumler.map(b => b.FAKULTE_ID))];
+          layer.on('click', () => {
+            document.getElementById('infoContent').innerHTML = content;
+          });
 
-  fakulteIDs.forEach(id => {
-    const fakulte = fakulteGeoJSON.features.find(f => f.properties.FAKULTE_ID === id);
-    if (fakulte) {
-      fakulteDropdown.add(new Option(fakulte.properties.FAKULTE_ADI, id));
-    }
-  });
+          layer.bindPopup(fakulteAdi);
+        },
+        style: {
+          color: "#0066cc",
+          weight: 2,
+          fillOpacity: 0.3
+        }
+      }).addTo(map);
 
-  fakulteDropdown.addEventListener("change", e => {
-    triggerBolumDropdown(e.target.value);
-  });
-}
-
-function triggerBolumDropdown(fakulteID) {
-  const bolumDropdown = document.getElementById("bolumSec");
-  bolumDropdown.innerHTML = "<option value=''>Bölüm Seç</option>";
-  document.getElementById("personelSec").innerHTML = "<option value=''>Personel Seç</option>";
-
-  const bolumlerFiltresi = bolumler.filter(b => b.FAKULTE_ID === fakulteID);
-  bolumlerFiltresi.forEach(b => {
-    bolumDropdown.add(new Option(b.BOLUM_ADI, b.BOLUM_ID));
-  });
-
-  bolumDropdown.disabled = false;
-
-  bolumDropdown.addEventListener("change", e => {
-    triggerPersonelDropdown(fakulteID, e.target.value);
-  });
-}
-
-function triggerPersonelDropdown(fakulteID, bolumID) {
-  const personelDropdown = document.getElementById("personelSec");
-  personelDropdown.innerHTML = "<option value=''>Personel Seç</option>";
-
-  const personelListesi = personeller.filter(p => p.FAKULTE_ID === fakulteID && p.BOLUM_ID === bolumID);
-  personelListesi.forEach(p => {
-    personelDropdown.add(new Option(p.PERSONEL_ADI, p.PERSONEL_ID));
-  });
-
-  personelDropdown.disabled = false;
-
-  personelDropdown.addEventListener("change", (e) => {
-    const secilenID = e.target.value;
-    const personel = personeller.find(p => p.PERSONEL_ID === secilenID);
-
-    if (!personel) return;
-
-    const fakulte = fakulteGeoJSON.features.find(f => f.properties.FAKULTE_ID === personel.FAKULTE_ID);
-    const bolum = bolumler.find(b => b.BOLUM_ID === personel.BOLUM_ID);
-
-    const html = `
-      <h3>${personel.PERSONEL_ADI}</h3>
-      <p><strong>Fakülte:</strong> ${fakulte?.properties?.FAKULTE_ADI || "-"}</p>
-      <p><strong>Bölüm:</strong> ${bolum?.BOLUM_ADI || "-"}</p>
-      <button id="gotoBtn">Konuma Git</button>
-    `;
-
-    const panel = document.getElementById("personelDetay");
-    panel.innerHTML = html;
-
-    document.getElementById("gotoBtn").addEventListener("click", () => {
-      if (fakulte) {
-        const center = L.geoJSON(fakulte.geometry).getBounds().getCenter();
-        map.setView(center, 19);
-      }
+      map.fitBounds(geojsonLayer.getBounds());
     });
-  });
+});
+
+// Personel Detaylarını Gösteren Açılır Pencere
+function showPersonelDetail(adSoyad, unvan, email, telefon) {
+  const popup = `
+    <div class='personel-detail'>
+      <strong>👤 Ad Soyad:</strong> ${adSoyad}<br>
+      <strong>🎓 Unvan:</strong> ${unvan || 'Bilinmiyor'}<br>
+      <strong>📧 Email:</strong> ${email || 'Yok'}<br>
+      <strong>📞 Telefon:</strong> ${telefon || 'Yok'}
+    </div>
+  `;
+  L.popup({ maxWidth: 300 })
+    .setLatLng(map.getCenter())
+    .setContent(popup)
+    .openOn(map);
 }
