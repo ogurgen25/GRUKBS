@@ -1,21 +1,13 @@
-// Giresun Üniversitesi Kampüs Bilgi Sistemi - Gelişmiş main.js
-
-const map = L.map('map', {
-  center: [40.915297, 38.321793],
-  zoom: 18,
-  maxBounds: [
-    [40.912, 38.318],
-    [40.918, 38.325]
-  ],
-  maxBoundsViscosity: 1.0
-});
+// Harita Oluşturma
+const map = L.map('map').setView([40.9153, 38.3218], 18);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 22,
   attribution: '© OpenStreetMap'
 }).addTo(map);
 
-let bolumler = [], katlar = [], personeller = [], geojsonLayer;
+// JSON Veri Kaynakları
+let bolumler = [], katlar = [], personeller = [];
 
 Promise.all([
   fetch('data/bolumler.json').then(res => res.json()),
@@ -26,34 +18,36 @@ Promise.all([
   katlar = katData;
   personeller = personelData;
 
+  // Fakülte Katmanını Yükle
   fetch('data/FAKULTE.json')
     .then(res => res.json())
     .then(fakulteData => {
-      geojsonLayer = L.geoJSON(fakulteData, {
+      const geojsonLayer = L.geoJSON(fakulteData, {
         onEachFeature: (feature, layer) => {
-          const fakulteAdi = feature.properties.ADI || feature.properties.FAKULTE_ADI || "Bilinmeyen Fakülte";
-          const bolumlerInFakulte = bolumler.filter(b => b.FAKULTE_ADI === fakulteAdi);
+          const fakulteAdi = feature.properties.ADI || "Bilinmeyen Fakülte";
+          const bolumlerInFakulte = bolumler.filter(b => b.FAKÜLTE_ADI === fakulteAdi);
 
-          let content = `<h3>${fakulteAdi}</h3>`;
+          let content = `<div class='fakulte-title'>🏛️ ${fakulteAdi}</div>`;
 
-         let content = `<div class="fakulte-title">${fakulteAdi}</div>`;
-
-if (bolumlerInFakulte.length === 0) {
-  content += "<p>Hiç bölüm kaydı yok.</p>";
-} else {
-  bolumlerInFakulte.forEach(bolum => {
-    const kat = katlar.find(k => k.KAT_ID === bolum.KAT_ID);
-    const personelList = personeller.filter(p => p.BOLUM_ID === bolum.BOLUM_ID);
-    content += `
-      <div class="bolum-card">
-        <strong>Bölüm:</strong> ${bolum.BOLUM_ADI}<br>
-        <strong>Kat:</strong> ${kat ? kat.KAT_ADI : "Belirsiz"}<br>
-        <strong>Bölüm Başkanı:</strong> ${bolum.BOLUM_BASKANI || "Yok"}<br>
-        <strong>Personeller:</strong>
-        <ul class="personel-list">
-          ${personelList.map(p => `
-            <li onclick="showPersonelDetail('${encodeURIComponent(JSON.stringify(p))}')">
-              ${p.A
+          if (bolumlerInFakulte.length === 0) {
+            content += "<p>Hiç bölüm kaydı yok.</p>";
+          } else {
+            bolumlerInFakulte.forEach(bolum => {
+              const kat = katlar.find(k => k.KAT_ID === bolum.KAT_ID);
+              const personelList = personeller.filter(p => p.BOLUM_ID === bolum.BOLUM_ID);
+              content += `
+                <div class='bolum-card'>
+                  <strong>📚 Bölüm:</strong> ${bolum.BOLUM_ADI}<br>
+                  <strong>🏢 Kat:</strong> ${kat ? kat.KAT_ADI : "Belirsiz"}<br>
+                  <strong>👤 Bölüm Başkanı:</strong> ${bolum.BOLUM_BASKANI || "Yok"}<br>
+                  <strong>👥 Personeller:</strong>
+                  <ul class='personel-list'>
+                    ${personelList.map(p => `<li onclick="showPersonelDetail('${p.AD_SOYAD}', '${p.UNVAN}', '${p.EMAIL}', '${p.TELEFON}')">${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</li>`).join("")}
+                  </ul>
+                </div>
+              `;
+            });
+          }
 
           layer.on('click', () => {
             document.getElementById('infoContent').innerHTML = content;
@@ -72,29 +66,18 @@ if (bolumlerInFakulte.length === 0) {
     });
 });
 
-function zoomToFakulte(fakulteAdi) {
-  if (!geojsonLayer) return;
-  geojsonLayer.eachLayer(layer => {
-    const ad = layer.feature.properties.ADI || layer.feature.properties.FAKULTE_ADI;
-    if (ad === fakulteAdi) {
-      map.fitBounds(layer.getBounds());
-      layer.openPopup();
-    }
-  });
-}
-
-function showPersonelDetail(personelStr) {
-  const personel = JSON.parse(decodeURIComponent(personelStr));
-  const detailHTML = `
-    <div class="personel-detail">
-      <strong>Ad Soyad:</strong> ${personel.AD_SOYAD}<br>
-      <strong>Ünvan:</strong> ${personel.UNVAN || "Yok"}<br>
-      <strong>E-posta:</strong> ${personel.EMAIL || "Bilinmiyor"}<br>
-      <strong>Telefon:</strong> ${personel.TELEFON || "Bilinmiyor"}<br>
-      <strong>Oda No:</strong> ${personel.ODA || "Bilinmiyor"}<br>
-      <strong>Bölüm ID:</strong> ${personel.BOLUM_ID}
+// Personel Detaylarını Gösteren Açılır Pencere
+function showPersonelDetail(adSoyad, unvan, email, telefon) {
+  const popup = `
+    <div class='personel-detail'>
+      <strong>👤 Ad Soyad:</strong> ${adSoyad}<br>
+      <strong>🎓 Unvan:</strong> ${unvan || 'Bilinmiyor'}<br>
+      <strong>📧 Email:</strong> ${email || 'Yok'}<br>
+      <strong>📞 Telefon:</strong> ${telefon || 'Yok'}
     </div>
   `;
-  const info = document.getElementById('infoContent');
-  info.innerHTML = detailHTML;
+  L.popup({ maxWidth: 300 })
+    .setLatLng(map.getCenter())
+    .setContent(popup)
+    .openOn(map);
 }
