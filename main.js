@@ -81,6 +81,9 @@ Promise.all([
 
 // Personel Detaylarını Gösteren Açılır Pencere
 function showPersonelDetail(adSoyad, unvan, email, telefon) {
+  selectedPersonel = { adSoyad, unvan, email, telefon };
+  document.getElementById("gotoBtn").disabled = false;
+
   const popup = `
     <div class='personel-detail'>
       <strong>👤 Ad Soyad:</strong> ${adSoyad}<br>
