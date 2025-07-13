@@ -4,155 +4,166 @@
   <meta charset="UTF-8">
   <title>Kampüs Bilgi Sistemi</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
   <style>
     body {
-      background-color: #002b6b;
-      color: white;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f9;
     }
-    .menu-tabs {
+
+    .app-header {
       display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin: 10px auto;
-    }
-    .menu-tabs .tab {
+      justify-content: space-between;
+      align-items: center;
+      background-color: #003366;
+      color: white;
       padding: 10px 20px;
-      font-weight: bold;
-      background-color: #004a99;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s, color 0.3s;
     }
-    .menu-tabs .tab:hover {
-      background-color: #0066cc;
+
+    .app-header h1 {
+      margin: 0;
+      font-size: 20px;
     }
-    .menu-tabs .tab.active {
-      background-color: #0099ff;
-      color: white;
-    }
-    .info-panel {
-      background-color: #e6f0ff;
-      color: #003366;
-      padding: 20px;
-      border-radius: 10px;
-      margin: 10px;
-      max-height: 600px;
-      overflow-y: auto;
-    }
-    .person-card {
-      background-color: white;
-      border-left: 5px solid #004a99;
-      padding: 10px;
-      margin-bottom: 8px;
-      border-radius: 6px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      color: #003366;
-    }
-    .person-card:hover {
-      background-color: #e6f0ff;
-      cursor: pointer;
-    }
-    .dark-mode {
-      background-color: #1e1e1e;
-      color: white;
-    }
-    .dark-mode .tab {
-      background-color: #333;
-    }
-    .dark-mode .tab.active {
-      background-color: #007bff;
-    }
-    .dark-mode .info-panel {
-      background-color: #2a2a2a;
-      color: white;
-    }
-    .dark-mode .person-card {
-      background-color: #333;
-      color: white;
-      border-left-color: #007bff;
-    }
-    .dark-mode .person-card:hover {
-      background-color: #444;
-    }
-    .clickable {
-      color: #004a99;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .dark-mode .clickable {
-      color: #66b2ff;
-    }
-    #map {
-      flex: 1;
-      min-height: 60vh;
-    }
-    main.app-body {
+
+    .dropdowns {
       display: flex;
-      flex-direction: row;
-      height: 80vh;
+      gap: 10px;
     }
-    #infoPanel {
-      width: 400px;
-      overflow-y: auto;
+
+    .dropdowns select {
+      padding: 6px;
+      font-size: 14px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    #map {
+      height: calc(100vh - 60px);
+      width: 100%;
     }
   </style>
 </head>
 <body>
-  <header class="app-header">
-    <div class="header-left">
-      <h1>🏛️ Giresun Üniversitesi Kampüs Bilgi Sistemi</h1>
-    </div>
-    <div class="header-right">
-      <input type="text" id="searchInput" placeholder="Ara: fakülte, bölüm, personel...">
-      <select id="katFilter">
-        <option value="">Tüm Katlar</option>
+  <div class="app-header">
+    <h1>Kampüs Bilgi Sistemi</h1>
+    <div class="dropdowns">
+      <select id="fakulteSec">
+        <option value="">Fakülte Seç</option>
       </select>
-      <button id="themeToggle">🌗 Tema</button>
+      <select id="bolumSec" disabled>
+        <option value="">Bölüm Seç</option>
+      </select>
+      <select id="personelSec" disabled>
+        <option value="">Personel Seç</option>
+      </select>
     </div>
-  </header>
+  </div>
 
-  <nav class="menu-tabs">
-    <button class="tab active" data-type="fakulte">🏛️ Fakülteler</button>
-    <button class="tab" data-type="bolum">📚 Bölümler</button>
-    <button class="tab" data-type="personel">👤 Personeller</button>
-  </nav>
+  <div id="map"></div>
 
-  <main class="app-body">
-    <div id="map" class="map-container"></div>
-    <aside id="infoPanel" class="info-panel">
-      <h2>İçerik Paneli</h2>
-      <div id="infoContent">Bir nesne seçiniz...</div>
-    </aside>
-  </main>
-
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
   <script>
-    document.querySelectorAll('.menu-tabs .tab').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.menu-tabs .tab').forEach(t => t.classList.remove('active'));
-        btn.classList.add('active');
+    let fakulteGeoJSON, bolumler, katlar, personeller;
+
+    const map = L.map("map").setView([40.915, 38.321], 17);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+    let fakulteLayerGroup = L.layerGroup().addTo(map);
+
+    Promise.all([
+      fetch("FAKULTE.json").then(res => res.json()),
+      fetch("bolumler.json").then(res => res.json()),
+      fetch("katlar.json").then(res => res.json()),
+      fetch("personel.json").then(res => res.json())
+    ]).then(([fakulteData, bolumData, katData, personelData]) => {
+      fakulteGeoJSON = fakulteData;
+      bolumler = bolumData;
+      katlar = katData;
+      personeller = personelData;
+
+      initializeFakulteDropdown();
+      drawFakultePolygons();
+    });
+
+    function drawFakultePolygons() {
+      fakulteLayerGroup.clearLayers();
+
+      L.geoJSON(fakulteGeoJSON, {
+        onEachFeature: (feature, layer) => {
+          const fakulteAdi = feature.properties.FAKULTE_ADI;
+          layer.bindPopup(`<b>${fakulteAdi}</b>`);
+          layer.on("click", () => {
+            map.fitBounds(layer.getBounds());
+            document.getElementById("fakulteSec").value = feature.properties.FAKULTE_ID;
+            triggerBolumDropdown(feature.properties.FAKULTE_ID);
+          });
+        },
+        style: {
+          color: "#003366",
+          fillColor: "#66ccff",
+          weight: 2,
+          fillOpacity: 0.5
+        }
+      }).addTo(fakulteLayerGroup);
+    }
+
+    function initializeFakulteDropdown() {
+      const fakulteDropdown = document.getElementById("fakulteSec");
+      const fakulteIDs = new Set(bolumler.map(b => b.FAKULTE_ID));
+
+      fakulteIDs.forEach(id => {
+        const fakulte = fakulteGeoJSON.features.find(f => f.properties.FAKULTE_ID === id);
+        if (fakulte) {
+          fakulteDropdown.add(new Option(fakulte.properties.FAKULTE_ADI, id));
+        }
       });
-    });
 
-    document.getElementById('themeToggle').addEventListener('click', () => {
-      const body = document.body;
-      body.classList.toggle('dark-mode');
+      fakulteDropdown.addEventListener("change", e => {
+        triggerBolumDropdown(e.target.value);
+      });
+    }
 
-      const infoPanel = document.getElementById('infoPanel');
-      infoPanel.classList.toggle('dark-mode');
+    function triggerBolumDropdown(fakulteID) {
+      const bolumDropdown = document.getElementById("bolumSec");
+      bolumDropdown.innerHTML = "<option value=''>Bölüm Seç</option>";
+      document.getElementById("personelSec").innerHTML = "<option value=''>Personel Seç</option>";
 
-      const personCards = document.querySelectorAll('.person-card');
-      personCards.forEach(card => card.classList.toggle('dark-mode'));
+      const bolumlerFiltresi = bolumler.filter(b => b.FAKULTE_ID === fakulteID);
+      bolumlerFiltresi.forEach(b => {
+        bolumDropdown.add(new Option(b.BOLUM_ADI, b.BOLUM_ID));
+      });
 
-      const clickables = document.querySelectorAll('.clickable');
-      clickables.forEach(el => el.classList.toggle('dark-mode'));
-    });
+      bolumDropdown.disabled = false;
+      bolumDropdown.addEventListener("change", e => {
+        triggerPersonelDropdown(fakulteID, e.target.value);
+      });
+    }
+
+    function triggerPersonelDropdown(fakulteID, bolumID) {
+      const personelDropdown = document.getElementById("personelSec");
+      personelDropdown.innerHTML = "<option value=''>Personel Seç</option>";
+
+      const personellerFiltresi = personeller.filter(p => p.FAKULTE_ID === fakulteID && p.BOLUM_ID === bolumID);
+      personellerFiltresi.forEach(p => {
+        personelDropdown.add(new Option(p.AD_SOYAD, p.PERSONEL_ID));
+      });
+
+      personelDropdown.disabled = false;
+      personelDropdown.addEventListener("change", e => {
+        const secilenID = e.target.value;
+        const personel = personeller.find(p => p.PERSONEL_ID === secilenID);
+        if (!personel) return;
+
+        const fakulte = fakulteGeoJSON.features.find(f => f.properties.FAKULTE_ID === personel.FAKULTE_ID);
+        if (fakulte) {
+          map.fitBounds(L.geoJSON(fakulte.geometry).getBounds());
+          L.popup()
+            .setLatLng(map.getCenter())
+            .setContent(`<b>${personel.AD_SOYAD}</b><br>${personel.UNVAN}`)
+            .openOn(map);
+        }
+      });
+    }
   </script>
-  <script src="main.js"></script>
 </body>
 </html>
