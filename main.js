@@ -78,7 +78,7 @@ layer._tooltipRef.remove(); // Başta gizle
 
 map.on("zoomend", () => {
   const currentZoom = map.getZoom();
-  if (currentZoom >= 18) {
+  if (currentZoom >= 5) {
     if (!map.hasLayer(layer._tooltipRef)) layer._tooltipRef.addTo(map);
   } else {
     if (map.hasLayer(layer._tooltipRef)) map.removeLayer(layer._tooltipRef);
