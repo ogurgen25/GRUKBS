@@ -2,7 +2,6 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="style.css" />
   <title>Kampüs Bilgi Sistemi</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
@@ -41,8 +40,9 @@
 
     #map {
       height: calc(100vh - 60px);
-      width: 100%;
-      <script src="main.js"></script>
+      width: calc(100% - 40px);
+      margin: 0 20px 20px 20px;
+      border-radius: 6px;
     }
   </style>
 </head>
@@ -68,15 +68,32 @@
   <script>
     let fakulteGeoJSON, bolumler, katlar, personeller;
 
-    const map = L.map("map").setView([40.915, 38.321], 17);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+    const map = L.map("map", {
+      center: [40.915, 38.321],
+      zoom: 17,
+      minZoom: 16,
+      maxZoom: 22,
+      maxBounds: [
+        [40.912, 38.317],
+        [40.918, 38.326]
+      ],
+      maxBoundsViscosity: 1.0
+    });
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap",
+      noWrap: true,
+      maxZoom: 22,
+      minZoom: 16
+    }).addTo(map);
+
     let fakulteLayerGroup = L.layerGroup().addTo(map);
 
     Promise.all([
-      fetch("FAKULTE.json").then(res => res.json()),
-      fetch("bolumler.json").then(res => res.json()),
-      fetch("katlar.json").then(res => res.json()),
-      fetch("personel.json").then(res => res.json())
+      fetch("data/FAKULTE.json").then(res => res.json()),
+      fetch("data/bolumler.json").then(res => res.json()),
+      fetch("data/katlar.json").then(res => res.json()),
+      fetch("data/personel.json").then(res => res.json())
     ]).then(([fakulteData, bolumData, katData, personelData]) => {
       fakulteGeoJSON = fakulteData;
       bolumler = bolumData;
