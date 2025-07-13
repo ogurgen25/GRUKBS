@@ -73,8 +73,6 @@ Promise.all([
           fillOpacity: 0.3
         }
       }).addTo(map);
-
-      map.fitBounds(geojsonLayer.getBounds());
     });
 });
 
