@@ -66,24 +66,6 @@ Promise.all([
           });
 
           layer.bindPopup(fakulteAdi);
-          layer.bindTooltip(fakulteAdi.toUpperCase(), {
-  permanent: true,
-  direction: 'center',
-  className: 'label-bold'
-  }).setLatLng(center);
-});
-      // Tooltip referansını sakla
-layer._tooltipRef = layer.getTooltip();
-layer._tooltipRef.remove(); // Başta gizle
-
-map.on("zoomend", () => {
-  const currentZoom = map.getZoom();
-  if (currentZoom >= 5) {
-    if (!map.hasLayer(layer._tooltipRef)) layer._tooltipRef.addTo(map);
-  } else {
-    if (map.hasLayer(layer._tooltipRef)) map.removeLayer(layer._tooltipRef);
-  }
-});
         },
         style: {
           color: "#0066cc",
