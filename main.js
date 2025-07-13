@@ -1,4 +1,4 @@
-// Ana harita başlatma
+// Harita nesnesini tanımla
 const map = L.map('map', {
   center: [40.915297, 38.321793],
   zoom: 18,
@@ -9,19 +9,16 @@ const map = L.map('map', {
   maxBoundsViscosity: 1.0
 });
 
-// OSM katmanı
+// Tile katmanı ekle
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 22,
   attribution: '© OpenStreetMap'
 }).addTo(map);
 
-// Veri tutucular
-let bolumler = [], katlar = [], personeller = [], fakulteKatmani;
+// JSON veri kaynakları
+let bolumler = [], katlar = [], personeller = [];
 
-// Kat filtreleme dropdown
-const katFilter = document.getElementById('katFilter');
-
-// JSON verileri yükleniyor
+// JSON dosyalarını oku
 Promise.all([
   fetch('data/bolumler.json').then(res => res.json()),
   fetch('data/katlar.json').then(res => res.json()),
@@ -31,22 +28,15 @@ Promise.all([
   katlar = katData;
   personeller = personelData;
 
-  // Kat filtrelerini doldur
-  const uniqueKatlar = [...new Set(katlar.map(k => k.KAT_ADI))];
-  uniqueKatlar.forEach(k => {
-    const opt = document.createElement('option');
-    opt.value = k;
-    opt.textContent = k;
-    katFilter.appendChild(opt);
-  });
-
-  // Fakülte katmanını yükle
+  // FAKULTE katmanını yükle
   fetch('data/FAKULTE.json')
     .then(res => res.json())
     .then(fakulteData => {
-      fakulteKatmani = L.geoJSON(fakulteData, {
+      const fakulteLayer = L.geoJSON(fakulteData, {
         onEachFeature: (feature, layer) => {
-          const fakulteAdi = feature.properties.ADI || feature.properties.FAKULTE_ADI || "Bilinmeyen Fakülte";
+          const props = feature.properties || {};
+          const fakulteAdi = props.ADI || props.FAKULTE_ADI || "Bilinmeyen Fakülte";
+
           const bolumlerInFakulte = bolumler.filter(b => b.FAKÜLTE_ADI === fakulteAdi);
 
           let content = `<h3>${fakulteAdi}</h3>`;
@@ -56,15 +46,14 @@ Promise.all([
             bolumlerInFakulte.forEach(bolum => {
               const kat = katlar.find(k => k.KAT_ID === bolum.KAT_ID);
               const personelList = personeller.filter(p => p.BOLUM_ID === bolum.BOLUM_ID);
-
               content += `
-                <div style="margin-top:10px; padding:8px; border:1px solid #ccc; border-radius:8px; background:#f9f9f9;">
-                  <strong>Bölüm:</strong> <span class="clickable" onclick="highlightFakulte('${fakulteAdi}')">${bolum.BOLUM_ADI}</span><br>
+                <div style="margin-top:8px; padding:5px; border-top:1px solid #ccc;">
+                  <strong>Bölüm:</strong> ${bolum.BOLUM_ADI}<br>
                   <strong>Kat:</strong> ${kat ? kat.KAT_ADI : "Belirsiz"}<br>
                   <strong>Bölüm Başkanı:</strong> ${bolum.BOLUM_BASKANI || "Yok"}<br>
                   <strong>Personeller:</strong>
-                  <ul style="margin-left:20px;">
-                    ${personelList.map(p => `<li class="clickable" onclick="zoomToPersonel('${p.AD_SOYAD}', '${fakulteAdi}')">${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</li>`).join("")}
+                  <ul>
+                    ${personelList.map(p => `<li>${p.AD_SOYAD} (${p.UNVAN || 'Görevli'})</li>`).join("")}
                   </ul>
                 </div>
               `;
@@ -83,29 +72,8 @@ Promise.all([
           fillOpacity: 0.3
         }
       }).addTo(map);
+
+      // Harita görünümünü fakültelerin sınırına göre ayarla
+      map.fitBounds(fakulteLayer.getBounds());
     });
 });
-
-// Tema değiştirici
-const themeToggle = document.getElementById('themeToggle');
-themeToggle.addEventListener('click', () => {
-  document.body.classList.toggle('dark-mode');
-});
-
-// Haritada fakülteyi öne çıkartma fonksiyonu
-function highlightFakulte(fakulteAdi) {
-  if (!fakulteKatmani) return;
-  fakulteKatmani.eachLayer(layer => {
-    const props = layer.feature.properties;
-    const adi = props.ADI || props.FAKULTE_ADI;
-    if (adi === fakulteAdi) {
-      map.fitBounds(layer.getBounds());
-      layer.openPopup();
-    }
-  });
-}
-
-// Personel tıklanınca haritada fakülteye gitme fonksiyonu
-function zoomToPersonel(adSoyad, fakulteAdi) {
-  highlightFakulte(fakulteAdi);
-}
