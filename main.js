@@ -1,4 +1,4 @@
-// 1. Harita Kurulumu
+// 1. Harita kurulumu
 const map = L.map("map", {
   center: [40.915, 38.321],
   zoom: 17,
@@ -17,7 +17,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   minZoom: 16
 }).addTo(map);
 
-// 2. Katmanların hepsini ayarla
+// 2. Katman tanımları (fakülte hariç hepsi)
 const layersConfig = [
   { name: "Kütüphane",        url: "data/KÜTÜPHANE_FeaturesToJSON.json",     color: "#673ab7" },
   { name: "Laboratuvar",      url: "data/LABORATUVARR_FeaturesToJSON.json",  color: "#e91e63" },
@@ -31,8 +31,7 @@ const layersConfig = [
   { name: "Yol Ağı",          url: "data/YOL_AGI.json",                      color: "#212121", type: "line" },
   { name: "Kapı / Giriş",     url: "data/KAPI_GİRİS.json",                   color: "#d84315", type: "point" },
   { name: "Bankamatik",       url: "data/BANKAMATİK_FeaturesToJSON.json",    color: "#00796b" },
-  { name: "Güvenlik",         url: "data/GÜVENLİK_FeaturesToJSON.json",      color: "#000000" },
-  { name: "Fakülteler",       url: "data/FAKULTE.json",                      color: "#1a138e" } // En üste alırsan önde görünür
+  { name: "Güvenlik",         url: "data/GÜVENLİK_FeaturesToJSON.json",      color: "#000000" }
 ];
 
 // 3. Katmanları haritaya ekle
@@ -80,21 +79,45 @@ layersConfig.forEach(layer => {
   });
 });
 
-// 4. Fakülte-bölüm-personel dropdown ve highlight
+// 4. FAKÜLTE-BÖLÜM-PERSONEL DROPDOWN VE VURGULAMA
 let fakulteGeoJSON, bolumler, personeller;
 let highlightLayer;
 
-Promise.all([
-  fetch("data/FAKULTE.json").then(res => res.json()),
-  fetch("data/bolumler.json").then(res => res.json()),
-  fetch("data/personel.json").then(res => res.json())
-]).then(([fakulteData, bolumData, personelData]) => {
-  fakulteGeoJSON = fakulteData;
-  bolumler = bolumData;
-  personeller = personelData;
-  initializeFakulteDropdown();
-});
+// FAKÜLTE KATMANI HARİTADA HER ZAMAN ÇİZİLİ KALSIN
+fetch("data/FAKULTE.json")
+  .then(res => res.json())
+  .then(data => {
+    fakulteGeoJSON = data;
+    drawFakultePolygons();
+    initializeFakulteDropdown();
+  });
 
+// Dropdownlar için diğer jsonları yükle
+fetch("data/bolumler.json").then(res => res.json()).then(data => bolumler = data);
+fetch("data/personel.json").then(res => res.json()).then(data => personeller = data);
+
+// Fakülteleri haritaya ekle (her zaman göster)
+function drawFakultePolygons() {
+  L.geoJSON(fakulteGeoJSON, {
+    style: {
+      color: "#003366",
+      fillColor: "#66ccff",
+      weight: 2,
+      fillOpacity: 0.5
+    },
+    onEachFeature: (feature, layer) => {
+      const fakulteAdi = feature.properties.FAKULTE_ADI || feature.properties.ADI || "";
+      layer.bindPopup(`<b>${fakulteAdi}</b>`);
+      layer.on("click", () => {
+        highlightFakulte(feature.properties.FAKULTE_ID);
+        document.getElementById("fakulteSec").value = feature.properties.FAKULTE_ID;
+        triggerBolumDropdown(feature.properties.FAKULTE_ID);
+      });
+    }
+  }).addTo(map);
+}
+
+// Fakülte dropdownunu doldur
 function initializeFakulteDropdown() {
   const fakulteDropdown = document.getElementById("fakulteSec");
   fakulteDropdown.innerHTML = "<option value=''>Fakülte Seç</option>";
@@ -108,19 +131,22 @@ function initializeFakulteDropdown() {
   });
 }
 
+// Bölüm dropdownunu doldur
 function triggerBolumDropdown(fakulteID) {
   const bolumDropdown = document.getElementById("bolumSec");
   bolumDropdown.innerHTML = "<option value=''>Bölüm Seç</option>";
   document.getElementById("personelSec").innerHTML = "<option value=''>Personel Seç</option>";
   bolumDropdown.disabled = false;
+  document.getElementById("personelSec").disabled = true;
   bolumler.filter(b => b.FAKULTE_ID === fakulteID).forEach(b => {
     bolumDropdown.add(new Option(b.BOLUM_ADI, b.BOLUM_ID));
   });
   bolumDropdown.addEventListener("change", e => {
     triggerPersonelDropdown(fakulteID, e.target.value);
-  });
+  }, { once: true });
 }
 
+// Personel dropdownunu doldur
 function triggerPersonelDropdown(fakulteID, bolumID) {
   const personelDropdown = document.getElementById("personelSec");
   personelDropdown.innerHTML = "<option value=''>Personel Seç</option>";
@@ -134,9 +160,10 @@ function triggerPersonelDropdown(fakulteID, bolumID) {
     if (personel) {
       highlightFakulte(fakulteID, true, personel);
     }
-  });
+  }, { once: true });
 }
 
+// Seçili fakülteyi vurgula ve odağı oraya al
 function highlightFakulte(fakulteID, zoom = true, personel = null) {
   if (highlightLayer) {
     map.removeLayer(highlightLayer);
@@ -144,7 +171,7 @@ function highlightFakulte(fakulteID, zoom = true, personel = null) {
   const fakulte = fakulteGeoJSON.features.find(f => f.properties.FAKULTE_ID === fakulteID);
   if (fakulte) {
     highlightLayer = L.geoJSON(fakulte, {
-      style: { color: "#ff5722", fillColor: "#ffd180", weight: 5, fillOpacity: 0.6 }
+      style: { color: "#ff5722", fillColor: "#ffd180", weight: 5, fillOpacity: 0.7 }
     }).addTo(map);
     if (zoom) map.fitBounds(highlightLayer.getBounds());
     if (personel) {
