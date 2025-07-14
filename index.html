@@ -62,7 +62,124 @@
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script>
   <!-- Kendi ana JS kodun -->
+    let fakulteGeoJSON, bolumler, katlar, personeller;
+    const map = L.map("map", {
+      center: [40.915, 38.321],
+      zoom: 17,
+      minZoom: 16,
+      maxZoom: 22,
+      maxBounds: [
+        [40.912, 38.317],
+        [40.918, 38.326]
+      ],
+      maxBoundsViscosity: 1.0
+    });
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap",
+      noWrap: true,
+      maxZoom: 22,
+      minZoom: 16
+    }).addTo(map);
+
+    let fakulteLayerGroup = L.layerGroup().addTo(map);
+
+    Promise.all([
+      fetch("data/FAKULTE.json").then(res => res.json()),
+      fetch("data/bolumler.json").then(res => res.json()),
+      fetch("data/katlar.json").then(res => res.json()),
+      fetch("data/personel.json").then(res => res.json())
+    ]).then(([fakulteData, bolumData, katData, personelData]) => {
+      fakulteGeoJSON = fakulteData;
+      bolumler = bolumData;
+      katlar = katData;
+      personeller = personelData;
+
+      initializeFakulteDropdown();
+      drawFakultePolygons();
+    });
+
+    function drawFakultePolygons() {
+      fakulteLayerGroup.clearLayers();
+
+      L.geoJSON(fakulteGeoJSON, {
+        onEachFeature: (feature, layer) => {
+          const fakulteAdi = feature.properties.FAKULTE_ADI;
+          layer.bindPopup(`<b>${fakulteAdi}</b>`);
+          layer.on("click", () => {
+            map.fitBounds(layer.getBounds());
+            document.getElementById("fakulteSec").value = feature.properties.FAKULTE_ID;
+            triggerBolumDropdown(feature.properties.FAKULTE_ID);
+          });
+        },
+        style: {
+          color: "#003366",
+          fillColor: "#66ccff",
+          weight: 2,
+          fillOpacity: 0.5
+        }
+      }).addTo(fakulteLayerGroup);
+    }
+
+    function initializeFakulteDropdown() {
+      const fakulteDropdown = document.getElementById("fakulteSec");
+      const fakulteIDs = new Set(bolumler.map(b => b.FAKULTE_ID));
+
+      fakulteIDs.forEach(id => {
+        const fakulte = fakulteGeoJSON.features.find(f => f.properties.FAKULTE_ID === id);
+        if (fakulte) {
+          fakulteDropdown.add(new Option(fakulte.properties.FAKULTE_ADI, id));
+        }
+      });
+
+      fakulteDropdown.addEventListener("change", e => {
+        triggerBolumDropdown(e.target.value);
+      });
+    }
+
+    function triggerBolumDropdown(fakulteID) {
+      const bolumDropdown = document.getElementById("bolumSec");
+      bolumDropdown.innerHTML = "<option value=''>Bölüm Seç</option>";
+      document.getElementById("personelSec").innerHTML = "<option value=''>Personel Seç</option>";
+
+      const bolumlerFiltresi = bolumler.filter(b => b.FAKULTE_ID === fakulteID);
+      bolumlerFiltresi.forEach(b => {
+        bolumDropdown.add(new Option(b.BOLUM_ADI, b.BOLUM_ID));
+      });
+
+      bolumDropdown.disabled = false;
+      bolumDropdown.addEventListener("change", e => {
+        triggerPersonelDropdown(fakulteID, e.target.value);
+      });
+    }
+
+    function triggerPersonelDropdown(fakulteID, bolumID) {
+      const personelDropdown = document.getElementById("personelSec");
+      personelDropdown.innerHTML = "<option value=''>Personel Seç</option>";
+
+      const personellerFiltresi = personeller.filter(p => p.FAKULTE_ID === fakulteID && p.BOLUM_ID === bolumID);
+      personellerFiltresi.forEach(p => {
+        personelDropdown.add(new Option(p.AD_SOYAD, p.PERSONEL_ID));
+      });
+
+      personelDropdown.disabled = false;
+      personelDropdown.addEventListener("change", e => {
+        const secilenID = e.target.value;
+        const personel = personeller.find(p => p.PERSONEL_ID === secilenID);
+        if (!personel) return;
+
+        const fakulte = fakulteGeoJSON.features.find(f => f.properties.FAKULTE_ID === personel.FAKULTE_ID);
+        if (fakulte) {
+          map.fitBounds(L.geoJSON(fakulte.geometry).getBounds());
+          L.popup()
+            .setLatLng(map.getCenter())
+            .setContent(`<b>${personel.AD_SOYAD}</b><br>${personel.UNVAN}`)
+            .openOn(map);
+        }
+      });
+    }
   <script src="main.js"></script>
 </body>
 </html>
