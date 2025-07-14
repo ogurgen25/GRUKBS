@@ -32,7 +32,7 @@ const layersConfig = [
   { name: "Kapı / Giriş",     url: "data/KAPI_GİRİS.json",                   color: "#d84315", type: "point" },
   { name: "Bankamatik",       url: "data/BANKAMATİK_FeaturesToJSON.json",    color: "#00796b" },
   { name: "Güvenlik",         url: "data/GÜVENLİK_FeaturesToJSON.json",      color: "#000000" },
-  { name: "Fakülteler",       url: "data/FAKULTE.json",                      color: "#1a237e" } // En üste alırsan önde görünür
+  { name: "Fakülteler",       url: "data/FAKULTE.json",                      color: "#1a138e" } // En üste alırsan önde görünür
 ];
 
 // 3. Katmanları haritaya ekle
