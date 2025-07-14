@@ -32,9 +32,10 @@ const layersConfig = [
   { name: "Kapı / Giriş",     url: "data/KAPI_GİRİS.json",                   color: "#d84315", type: "point" },
   { name: "Bankamatik",       url: "data/BANKAMATİK_FeaturesToJSON.json",    color: "#00796b" },
   { name: "Güvenlik",         url: "data/GÜVENLİK_FeaturesToJSON.json",      color: "#000000" },
+  { name: "Fakülteler",       url: "data/FAKULTE.json",                      color: "#1a237e" } // En üste alırsan önde görünür
 ];
 
-// 3. Katmanlar haritaya yüklensin
+// 3. Katmanları haritaya ekle
 let overlayLayers = {};
 layersConfig.forEach(layer => {
   fetch(layer.url).then(res => res.json()).then(data => {
@@ -81,7 +82,7 @@ layersConfig.forEach(layer => {
 
 // 4. Fakülte-bölüm-personel dropdown ve highlight
 let fakulteGeoJSON, bolumler, personeller;
-let highlightLayer; // Seçim için öne çıkarma
+let highlightLayer;
 
 Promise.all([
   fetch("data/FAKULTE.json").then(res => res.json()),
@@ -136,7 +137,6 @@ function triggerPersonelDropdown(fakulteID, bolumID) {
   });
 }
 
-// Seçili fakülteyi öne çıkar ve odağı oraya al
 function highlightFakulte(fakulteID, zoom = true, personel = null) {
   if (highlightLayer) {
     map.removeLayer(highlightLayer);
