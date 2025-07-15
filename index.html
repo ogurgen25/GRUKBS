@@ -1,63 +1,19 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Kampüs Bilgi Sistemi</title>
+  <meta charset="utf-8">
+  <title>Kampüs 3D Harita</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <link href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" rel="stylesheet" />
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f6f9;
-    }
-    .app-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #003366;
-      color: white;
-      padding: 10px 20px;
-    }
-    .app-header h1 {
-      margin: 0;
-      font-size: 20px;
-    }
-    .dropdowns {
-      display: flex;
-      gap: 10px;
-    }
-    .dropdowns select {
-      padding: 6px;
-      font-size: 14px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-    #map {
-      height: calc(100vh - 60px);
-      width: 100vw;
-      margin: 0;
-      border-radius: 6px;
-    }
+    body { margin: 0; padding: 0; }
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
   </style>
 </head>
 <body>
-  <div class="app-header">
-    <h1>Kampüs Bilgi Sistemi</h1>
-    <div class="dropdowns">
-      <select id="fakulteSec">
-        <option value="">Fakülte Seç</option>
-      </select>
-      <select id="bolumSec" disabled>
-        <option value="">Bölüm Seç</option>
-      </select>
-      <select id="personelSec" disabled>
-        <option value="">Personel Seç</option>
-      </select>
-    </div>
-  </div>
   <div id="map"></div>
-  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+
+  <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
   <script src="main.js"></script>
 </body>
 </html>
